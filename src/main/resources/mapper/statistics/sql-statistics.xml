@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="core.statistics.mapper.StatisticsMapper">													 
+	<select id="searchUsageAmountStatistics" parameterType="core.statistics.dto.StatisticsCondDto" resultType = "core.statistics.dto.AmountUsedDto">
+		<![CDATA[
+		with daily as(
+		with recursive cte AS(
+			select 1 as rnum
+			union all
+			select rnum +1 from cte
+			where rnum < 31
+		)
+		select lpad(rnum,'2','0') daily_usage, 0 amount from cte
+		)
+		select daily.daily_usage
+		,(ifnull(s.sum_amount,0)+daily.amount) sum_date_amount
+		,sum(ifNULL(sum_amount,0)+daily.amount) over(order by daily.daily_usage) as accumulated_date_amount
+		from daily
+		left outer join 
+		(
+		select date_format(payment_date,'%Y-%m-%d') date_of_use
+				,date_format(payment_date,'%d') daily_usage
+				,SUM(amount_of_payment) sum_amount
+		from card_usage_history
+		where payment_date between DATE_FORMAT(STR_TO_DATE(#{fromDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s') and DATE_FORMAT(STR_TO_DATE(#{toDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s')
+		group by date_format(payment_date,'%d')
+		order by payment_date ) s
+		on daily.daily_usage = s.daily_usage
+		order by daily.daily_usage
+		]]>
+	</select>
+	<select id="searchAverageDailyUsage" parameterType="core.statistics.dto.StatisticsCondDto" resultType = "core.statistics.dto.AmountUsedDto">
+		<![CDATA[
+			with daily as(
+			with recursive cte AS(
+				select 1 as rnum
+				union all
+				select rnum +1 from cte
+				where rnum < 31
+			)
+			select lpad(rnum,'2','0') daily_usage, 0 amount from cte
+			),
+			avgAmount as(
+			select SUM(amount_of_payment) as usage_amount, date_format(payment_date,'%d') daily_usage
+			from card_usage_history
+			where payment_date < DATE_FORMAT(STR_TO_DATE(#{toDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s')
+			group by date_format(payment_date,'%d')
+			)
+			select daily.daily_usage
+			,round(sum(ifnull(a.usage_amount,0)+daily.amount) over(order by daily.daily_usage)/(select count(distinct date_format(payment_date,'%Y-%m')) from card_usage_history where payment_date < DATE_FORMAT(STR_TO_DATE(#{toDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s')),0) average_daily_usage
+			from daily
+			left outer join avgAmount a
+			on daily.daily_usage = a.daily_usage
+			group by daily.daily_usage
+			order by daily.daily_usage
+		]]>
+	</select>
+	
+	<select id="searchStoreCategory" parameterType="core.statistics.dto.StatisticsCondDto" resultType = "core.statistics.dto.CategoryDto">
+		<![CDATA[
+		select date_format(payment_date,'%Y-%m')as "month",store_category,count(store_category) as "count",sum(amount_of_payment) as sum_of_payment
+		from card_usage_history
+		where payment_date between DATE_FORMAT(STR_TO_DATE(#{fromDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s') and DATE_FORMAT(STR_TO_DATE(#{toDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s')
+		group by store_category, date_format(payment_date,'%Y-%m')
+		order by date_format(payment_date,'%Y-%m'),sum(amount_of_payment) desc,count(store_category) desc
+		]]>
+	</select>
+	
+	<select id="searchLocationCoordinate" parameterType="core.statistics.dto.StatisticsCondDto" resultType = "core.statistics.dto.PositionDto">
+		select store_name,ycoordinate as lat, xcoordinate as lng 
+		from card_usage_history
+		where payment_date between DATE_FORMAT(STR_TO_DATE(#{fromDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s') and DATE_FORMAT(STR_TO_DATE(#{toDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s')
+	</select>
+	
+	<insert id="insertStoreInformation" parameterType="core.statistics.dto.StoreDto">
+		<![CDATA[
+			REPLACE INTO store_information
+			(
+				business_number
+				,store_name
+				,store_category
+				,store_category_detail
+				,address_name
+				,road_address_name
+				,x_location
+				,y_location
+				,create_date
+				,create_user_id
+				,update_date
+				,update_user_id
+			)
+			VALUES
+			(
+				#{businessNumber}
+				,#{storeName}
+				,#{storeCategory}
+				,#{storeCategoryDetail}
+				,#{addressName}
+				,#{roadAddressName}
+				,#{xLocation}
+				,#{yLocation}
+				,IFNULL(#{createDate},NOW()) 
+				,IFNULL(#{creatUserId},'SYSADMIN')
+				,IFNULL(#{updateDate},NOW())
+				,IFNULL(#{updateUserId},'SYSADMIN')
+			)
+		]]>
+	</insert>
+</mapper>

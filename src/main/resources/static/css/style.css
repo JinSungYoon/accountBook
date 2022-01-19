@@ -1,0 +1,9 @@
+@CHARSET "UTF-8";
+
+.thead-black{
+	background-color:#323232;
+}
+
+#searchBtn{
+	float : right;
+}

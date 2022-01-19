@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="core.excel.mapper.ExcelMapper">
+	<insert id="saveExcelData" parameterType = "core.excel.dto.ExcelData">
+		<![CDATA[
+		REPLACE INTO CARD_USAGE_HISTORY
+		(
+			approval_number
+			,store_name
+			,amount_of_payment
+			,payment_date
+			,used_card_number
+			,classification_of_use
+			,installment_month
+			,cancellation
+			,store_category
+			,store_category_detail
+			,address_name
+			,road_address_name
+			,xcoordinate
+			,ycoordinate
+			,create_date
+			,create_user_id
+			,update_date
+			,update_user_id
+		)
+		VALUES(			
+			#{approvalNumber}
+			,#{storeName}
+			,#{amountOfPayment}
+			,#{paymentDate}
+			,#{usedCardNumber}
+			,#{classificationOfUse}
+			,#{installmentMonth}
+			,#{cancellation}
+			,#{storeCategory}
+			,#{storeCategoryDetail}
+			,#{addressName}
+			,#{roadAddressName}
+			,#{xcoordinate}
+			,#{ycoordinate}
+			,NOW()
+			,'SYSADMIN'
+			,NOW()
+			,'SYSADMIN'
+		)
+		]]>
+	</insert>
+	
+	<select id="checkApplyExcelCount" resultType="Integer">
+        	<![CDATA[
+        	SELECT COUNT(approval_number) CNT
+			FROM card_usage_history
+			WHERE create_date between DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i') and DATE_ADD(DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i'), interval 1 MINUTE);
+			]]>
+    </select>
+    
+	<select id="storeName" resultType="String">
+		<![CDATA[
+		select distinct store_name
+		from card_usage_history
+		]]>
+	</select>
+	
+</mapper>
