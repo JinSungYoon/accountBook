@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입 페이지</title>
+</head>
+<body>
+    <h1>회원 가입</h1>
+    <hr>
+
+    <form th:action="@{/user/signup}" method="post" onsubmit="return formSubmit();">
+        <input type="text" name="email" placeholder="이메일" required>
+        <div>
+	        <input type="password" name="password" placeholder="비밀번호" onchange="checkPwd()" required>
+	        <input type="password" name="confirmPassword" placeholder="비밀번호 확인" onchange="checkPwd()" required>
+	        <span type="text" name="passwordMessage"/>
+        </div>
+        <div>
+        	<input type="text" id="lastName" name="lastName" placeholder="홍">
+			<input type="text" id="firstName" name="firstName" placeholder="길동">
+			<input type="hidden" id="userName" name="userName">
+        </div>
+        <div>
+			<input type="radio" name="gender" value="Y" checked="checked"> 남
+      		<input type="radio" name="gender" value="X">여 <br>
+		</div>
+		<div>
+        <input type="number" name="age" placeholder="나이">
+        </div>
+        <div>
+			<input type="radio" name="auth" value="ROLE_ADMIN,ROLE_MEMBER"> 관리자
+      		<input type="radio" name="auth" value="ROLE_MEMBER" checked="checked"> 회원 <br>
+		</div>
+        <button type="submit">가입하기</button>
+    </form>
+</body>
+	<script>
+	function checkPwd(){
+		var pwd = document.getElementsByName("password")[0];
+		var cfmPwd = document.getElementsByName('confirmPassword')[0];
+		if(pwd.value != '' && cfmPwd.value !=''){
+			if(pwd.value!=cfmPwd.value){
+				document.getElementsByName("passwordMessage")[0].innerText = "비밀번호가 일치하지 않습니다";
+			}else{
+				document.getElementsByName("passwordMessage")[0].innerText = "";
+			}
+		}else if(pwd.value == ''){
+			document.getElementsByName("passwordMessage")[0].innerText = "비밀번호를 입력해주세요.";
+		}else if(cfmPwd.value == ''){
+			document.getElementsByName("passwordMessage")[0].innerText = "확인 비밀번호를 입력해주세요.";
+		}
+		
+	}
+	
+	function formSubmit(){
+	    var fName = document.getElementById('lastName').value;
+	    var lName = document.getElementById('firstName').value;
+	    var userName = document.getElementById('userName');
+	    userName.value = fName+lName;
+	    
+	    if(document.getElementsByName("passwordMessage")[0].innerText!=""){
+	    	alert("비밀번호를 확인해 주세요");
+	    	return false;
+	    }
+	    
+	  }
+	
+	</script>
+
+</html>

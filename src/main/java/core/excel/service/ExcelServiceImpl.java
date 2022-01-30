@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import core.api.MapApi;
+import core.excel.dto.ComboDto;
 import core.excel.dto.ExcelData;
 import core.excel.dto.LocationDto;
 import core.excel.mapper.ExcelMapper;
@@ -114,19 +115,6 @@ public class ExcelServiceImpl implements ExcelService {
 
 	@Override
 	public int saveExcelData(List<ExcelData> data) throws Exception {
-		/*
-		List<String> dateList =data.stream()
-				.sorted(Comparator.comparing(ExcelData::getPaymentDueDate).reversed())
-				.map(ExcelData::getPaymentDueDate)
-				.collect(Collectors.toList());
-		dateList = dateList.stream()
-					.filter(d -> d.matches("\\d{4}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[01])"))
-					.distinct()
-					.collect(Collectors.toList());
-		
-		String cYear = "";
-		System.out.println(dateList.toString());
-		*/
 		for(ExcelData item : data) {
 			if(item.getCancellation().equals("Y")) {
 				item.setAmountOfPayment(item.getAmountOfPayment()*-1); 
@@ -148,6 +136,25 @@ public class ExcelServiceImpl implements ExcelService {
 			list = mapApi.searchNaverLocation(keyword);
 		}
 
+		return list;
+	}
+
+	@Override
+	public List<LocationDto> searchStoreList(LocationDto data) throws Exception {
+		List<LocationDto> list = excelMapper.searchStoreList(data);
+		return list;
+	}
+
+	@Override
+	public List<LocationDto> updateLocation(LocationDto data) throws Exception {
+		excelMapper.updateLocation(data);
+		List<LocationDto> list = excelMapper.searchStoreList(data);
+		return list;
+	}
+
+	@Override
+	public List<ComboDto> comboCategory() throws Exception {
+		List<ComboDto> list = excelMapper.comboCategory();
 		return list;
 	}
 

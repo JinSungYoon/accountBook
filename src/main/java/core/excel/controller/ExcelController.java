@@ -40,6 +40,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import core.api.MapApi;
 import core.board.dto.BoardDto;
+import core.excel.dto.ComboDto;
 import core.excel.dto.ExcelData;
 import core.excel.dto.LocationDto;
 import core.excel.service.ExcelService;
@@ -98,5 +99,44 @@ public class ExcelController {
 		int cnt = excelService.saveExcelData(dataArr);
 		return cnt;
 	}
-		
+	
+	@GetMapping("/locationMapping")
+	public ModelAndView getLocationMapping(LocationDto data) throws Exception{
+		ModelAndView mv = new ModelAndView("/excel/locationMapping");
+		List<LocationDto> list = excelService.searchStoreList(data);
+		mv.addObject("list",list);
+		return mv;
+	}
+	
+	@ResponseBody
+	@GetMapping("/searchStoreList")
+	public List<LocationDto> searchStoreList(@RequestParam("storeName") String storeName, @RequestParam("storeCategory") String storeCategory,@RequestParam("storeCategoryDetail") String storeCategoryDetail)throws Exception{
+		LocationDto data = new LocationDto();
+		if(!storeName.equals("")) {
+			data.setStoreName(storeName);
+		}
+		if(!storeCategory.equals("")) {
+			data.setStoreCategory(storeCategory);
+		}
+		if(!storeCategoryDetail.equals("")) {
+			data.setStoreCategoryDetail(storeCategoryDetail);
+		}
+		List<LocationDto> list = excelService.searchStoreList(data);
+		return list;
+	}
+	
+	@ResponseBody
+	@GetMapping("/comboCategory")
+	public List<ComboDto> comboCategory()throws Exception{
+		List<ComboDto> combo = excelService.comboCategory();
+		return combo;
+	}
+	
+	@ResponseBody
+	@PostMapping("/updateLocation")
+	public List<LocationDto> updateLocation(@RequestBody LocationDto data)throws Exception{
+		List<LocationDto> list = excelService.updateLocation(data);
+		return list;
+	}
+	
 }

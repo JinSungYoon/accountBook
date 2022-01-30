@@ -124,7 +124,7 @@ function addRow(index='',val=''){
 	let float = '^(0|(([-][0-9][.]d+)|([0]+[.][0-9]+)|([-]?[1-9][0-9]*([.][0-9]+)?)))$';
 	let date = '^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\\s([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$';
 	let number = '^[0-9]+$';
-	//'[0-9]{8}'
+
 	let money = '^[+-]?[\\d,]*(\\.?\\d*)$';
 	let mandatory = ['','required','required','required','required','','','','','','','','','',''];
 	let dataPattern = ['',number,text,money,date,text,text,number,text,text,text,text,text,float,float];
@@ -325,27 +325,10 @@ $(document).on("click", "#searchBtn", function(){
     
     if(data!=""){
 		
-	    var childWin = window.open('','searchLocation','width=1200,height=500,location=no,status=no,scrollbars=yes');
-	    popupForm = document.createElement("form");
-		popupForm.setAttribute("name", "popupForm");
-		popupForm.setAttribute("method", "post");
-		popupForm.setAttribute("action", "/searchLocation");
-		popupForm.setAttribute("target", "searchLocation");
-		var input1 = document.createElement('input');
-		input1.setAttribute("type", "hidden");
-		input1.setAttribute("name", "keyword");
-		input1.setAttribute("id", "keyword");
-		input1.setAttribute("value", data);
-		popupForm.appendChild(input1);
-		var input2 = document.createElement('input');
-		input2.setAttribute("type", "hidden");
-		input2.setAttribute("name", "rowIndex");
-		input2.setAttribute("id", "rowIndex");
-		input2.setAttribute("value", tr.index());
-		popupForm.appendChild(input2);
-		document.body.appendChild(popupForm);
-		popupForm.submit();
-		document.body.removeChild(popupForm);
+	    var childWin = window.open('searchLocation','searchLocation','width=1200,height=500,location=no,status=no,scrollbars=yes');
+	    document.getElementById("keyword").value = data;
+	    document.getElementById("rowIndex").value = tr.index();
+		
 	}else{
 		alert("가맹점명을 입력해주시요");
 	}
@@ -365,6 +348,10 @@ function isValidType(mandatory,type,value){
 }
 
 function dataSave(){
+	
+	let token = $("meta[name='_csrf']").attr("content");
+	let header = $("meta[name='_csrf_header']").attr("content");
+	
 	let tr =  document.getElementById("accountBook").tBodies[0].children;
 	let dataArr = [];
 	let colName = ['checkBox','approvalNumber','storeName','amountOfPayment','paymentDate','usedCardNumber','classificationOfUse','installmentMonth','cancellation','storeCategory','storeCategoryDetail','addressName','roadAddressName','xcoordinate','ycoordinate']
@@ -430,6 +417,10 @@ function dataSave(){
 		url:'/saveExcelData',
 		data : JSON.stringify(dataArr),
 		dataType : 'json',
+		beforeSend : function(xhr)
+        {   /*데이터를 전송하기 전에 헤더에 csrf값을 설정한다*/
+			xhr.setRequestHeader(header, token);
+        },
 		contentType: 'application/json',
 		success : function(result){
 			alert(`${result} Data successfully saved`);

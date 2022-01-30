@@ -1,5 +1,8 @@
 $(document).ready(function(){
 	
+	// 부모창에 있는 keyword 자식창에 전달
+	document.getElementById("keyword").value = window.opener.document.getElementById("keyword").value;
+	document.getElementById("rowIndex").value = window.opener.document.getElementById("rowIndex").value;
 	searchLocation(document.getElementById("keyword").value,$("#selectSearch option:selected").val());
 	
 	$("#searchLocation").click(function(){
@@ -24,7 +27,7 @@ $(document).ready(function(){
 			
 			// 부모창에 검색한 정보 매핑
 			for(let loop=0;loop<id.length;loop++){
-			    var index = Object.values(tr.children).map(data =>data.id).indexOf(id[loop]);
+			    let index = Object.values(tr.children).map(data =>data.id).indexOf(id[loop]);
 			    tr.children[index].children[0].children[0].value = text[loop];
 			}
 			
@@ -37,6 +40,9 @@ $(document).ready(function(){
 	
 	function searchLocation(keyword,browser){
 		
+		let token = $("meta[name='_csrf']").attr("content");
+		let header = $("meta[name='_csrf_header']").attr("content");
+		
 		let dataObj = {};
 	
 		dataObj.keyword = keyword;  
@@ -46,20 +52,24 @@ $(document).ready(function(){
 			type : 'GET',
 			url:'/searchMapInfo',
 			data : dataObj,
+			beforeSend : function(xhr)
+            {   /*데이터를 전송하기 전에 헤더에 csrf값을 설정한다*/
+				xhr.setRequestHeader(header, token);
+            },
 			dataType : 'json',
 			contentType: 'application/json',
 			success : function(result){
-				var tbody = '';
-				var col = Object.keys(result[0]);
+				let tbody = '';
+				let col = Object.keys(result[0]);
 				col.unshift('radio');
 				console.log(col);
 				//
-				for(var row=0;row<result.length;row++){
+				for(let row=0;row<result.length;row++){
 					// Header 칼럼과 동일한 데이터는 추가하지 않기 위해
 					tbody += '<tr>';
 					
-					for(var idx=0; idx<col.length;idx++){
-						var data = '';
+					for(let idx=0; idx<col.length;idx++){
+						let data = '';
 						if(idx==0){
 							data = '<input class="radioBox" name="radioBox" type="radio" value="">';
 						}else{

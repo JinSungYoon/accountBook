@@ -1,5 +1,7 @@
 package core.configuration;
 
+import java.util.Properties;
+
 import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -48,5 +50,10 @@ public class DatabaseConfiguration {
 		DataSource dataSource = new HikariDataSource(hikariConfig());
 		System.out.println(dataSource.toString());
 		return dataSource;
+	}
+	
+	@ConfigurationProperties("prefix=spring.jpa")
+	public Properties hibernateConfig() {
+		return new Properties();
 	}
 }

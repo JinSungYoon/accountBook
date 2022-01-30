@@ -151,14 +151,16 @@ public class MapApi {
 		String companName = keyword;
 		String encodeAddress = "";  // 한글 주소는 encoding 해서 날려야 함
 		String apiKey = "6429d4bb07e8737943994b85d7c0d793";
+		int size = 15;
+		int page = 1;
 		try { 
 			encodeAddress = URLEncoder.encode( companName, "UTF-8" );
 			} 
 		catch ( 
 				UnsupportedEncodingException e ) { e.printStackTrace();
-				}
+		}
 		
-		String apiUrl = "https://dapi.kakao.com/v2/local/search/keyword.json?query="+ encodeAddress;
+		String apiUrl = "https://dapi.kakao.com/v2/local/search/keyword.json?query="+ encodeAddress+"&size="+size+"&page="+page;
 		String auth = "KakaoAK " + apiKey;
 		
 		URL url = new URL( apiUrl );
@@ -184,6 +186,10 @@ public class MapApi {
 	    JSONParser parser = new JSONParser();
 	    JSONObject jsonObj = (JSONObject)parser.parse(jsonString);
 	    JSONArray result = (JSONArray) jsonObj.get("documents");
+	    JSONObject meta = (JSONObject) jsonObj.get("meta");
+	    
+	    boolean isEnd = (boolean) meta.get("is_end");
+	    
 	    for(int idx=0;idx<result.size();idx++) {
 	    	LocationDto store = new LocationDto();
 	    	JSONObject item =  (JSONObject) result.get(idx);
@@ -198,6 +204,53 @@ public class MapApi {
 	    	list.add(store);
 	    }
 	    
+	    /*
+ 		// 한번에 다 조회하기
+	    while(!isEnd) {
+	    	page+=1;
+	    	apiUrl = "https://dapi.kakao.com/v2/local/search/keyword.json?query="+ encodeAddress+"&size="+size+"&page="+page;
+			auth = "KakaoAK " + apiKey;
+			
+			url = new URL( apiUrl );
+		    conn = ( HttpsURLConnection ) url.openConnection();
+			conn.setRequestMethod( "GET" );
+		    conn.setRequestProperty( "Authorization", auth );
+		    
+		    responseCode = conn.getResponseCode();
+		    if( responseCode == 200 ) {  // 호출 OK
+		    	br = new BufferedReader( new InputStreamReader(conn.getInputStream(), "UTF-8") );
+		    } else {  // 에러
+		    	br = new BufferedReader( new InputStreamReader(conn.getErrorStream(), "UTF-8") );
+		    }
+		    
+		    jsonString = new String();
+		    
+		    while ( ( stringLine= br.readLine()) != null ) {
+		        jsonString += stringLine;
+		    }
+		    
+		    parser = new JSONParser();
+		    jsonObj = (JSONObject)parser.parse(jsonString);
+		    result = (JSONArray) jsonObj.get("documents");
+		    meta = (JSONObject) jsonObj.get("meta");
+		    isEnd = (boolean) meta.get("is_end");
+		    
+		    for(int idx=0;idx<result.size();idx++) {
+		    	LocationDto store = new LocationDto();
+		    	JSONObject item =  (JSONObject) result.get(idx);
+		    	String categoryName = (String) item.get("category_name");
+		    	store.setStoreName((String) item.get("place_name"));
+		    	store.setStoreCategory((String) item.get("category_group_name"));
+		    	store.setStoreCategoryDetail(categoryName.substring(categoryName.lastIndexOf(" ")+1));
+		    	store.setAddressName((String) item.get("address_name"));
+		    	store.setRoadAddressName((String) item.get("road_address_name"));
+		    	store.setXcoordinate(Double.parseDouble((String)item.get("x")));
+		    	store.setYcoordinate(Double.parseDouble((String)item.get("y")));
+		    	list.add(store);
+		    }
+	    	
+	    }
+	    */
 	    return list; 
 	}
 }

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>내정보</title>
+</head>
+<body>
+    <h1>내정보 확인 페이지입니다.</h1>
+    <p>
+        <div>
+        이메일 : <span sec:authentication="principal.email"></span>
+        </div>
+        <div>
+        이름 : <span sec:authentication="principal.username"></span>
+        </div>
+        <div>
+        나이 : <span sec:authentication="principal.age"></span>
+        </div>
+        <div>
+        성별 : <span sec:authentication="principal.gender" id="gender" var="gender">${gender}</span>
+        </div>
+        <div>
+        생성일자 : <span sec:authentication="principal.createdDate"></span>
+        </div>
+        <div>
+        권한 : <span sec:authentication="authorities"></span>
+        </div>
+        
+    </p>
+	<a th:href="@{'/'}">메인으로 이동</a>
+</body>
+	<script>
+		if (document.getElementById("gender").innerText == 'Y'){
+			document.getElementById("gender").innerText = '남';
+		}else{
+			document.getElementById("gender").innerText = '여';
+		}
+	</script>
+</html>

@@ -1,7 +1,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
   <head>
+  	<!--  header 파일 import -->
+  	<th:block th:replace="/fragments/header :: headFragment"></th:block>
     <meta charset="UTF-8">
+    
+    <!-- csrf정보를 담기위한 meta -->
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    
     <title>가계부 데이터</title>
     <!-- 기본 JQuery UI CSS파일 -->
     <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css">
@@ -12,6 +19,7 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" >
     <!-- Font awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Custom css -->
     <link th:href="@{/css/excel/accountBookStyle.css}" rel="stylesheet"/>
   </head>
   <div>
@@ -19,6 +27,8 @@
   		<button id="btnAdd" th:type="button" onclick="return addRow()">추가</button>
   		<button id="btndelete" th:type="button" onclick="return deleteRow()">삭제</button>
   		<button id="btnSave" class="btn btn-send-data" th:type="button" onclick="return dataSave()">저장</button>
+  		<input id="rowIndex" class="rowIndex" type="hidden" name="rowIndex" th:value="${rowIndex}">
+		<input id="keyword" class="keyword" type="text" name="keyword" maxlength=255 th:value="${keyword}" autocomplete="off">
   	</span>
   </div>
   <body>
@@ -46,9 +56,6 @@
   			
   		</tbody>
   	</table>
-    <!-- form id="excelForm" th:action="@{/excelUpload}" method="POST" enctype="multipart/form-data">
-      <input type="file" th:name="file" id="inputExcelRead" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>      
-    </form-->
     <div>
 	  	<span>
 	  		<button id="btnAddExcelRow" th:type="button" onclick="return addExcelRow()">추가</button>

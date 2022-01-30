@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>로그인 페이지</title>
+</head>
+<body>
+	<h1>로그인</h1>
+	<hr>
+	
+	<form action="/user/login" method="post">
+		<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+		<input type="text" id="email" name="email" placholder="이메일을 입력해 주세요">
+		<input type="password" id="password" name="password" placeholder="비밀번호">
+		<button type="submit">로그인</button>
+	</form>
+	<div>
+		<a sec:authorize="isAnonymous()" th:href="@{/user/signup}">회원가입</a>
+		<a th:href="@{'/'}">메인으로 이동</a>
+	</div>
+</body>
+</html>

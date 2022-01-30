@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>로그인 성공</title>
+</head>
+<body>
+	<h1>로그인 성공</h1>
+	<hr>
+	<p>
+		
+	    <div sec:authorize="hasRole('ROLE_MEMBER')">Has MEMBER ROLE</div>
+	    <div sec:authorize="hasRole('ROLE_ADMIN')">Has ADMIN ROLE</div>
+        <span sec:authentication="principal"></span>
+        이메일 : <span sec:authentication="principal.email"></span>
+        <span sec:authentication="principal.username"></span>님 환영합니다~
+        <span sec:authentication="name"></span>님 환영합니다~
+       생성일자 : <span sec:authentication="principal.createdDate"></span>
+        <span sec:authentication="authorities"></span>
+    </p>
+	<a th:href="@{'/'}">메인으로 이동</a>
+</body>
+</html>

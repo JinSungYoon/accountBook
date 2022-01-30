@@ -1,0 +1,24 @@
+body{
+	margin : 0;	/* body의 바깥 여백을 없앰으로서 내비게이션 바가 페이지에 바짝 붙게 함*/
+}
+
+.nav-container{
+	display : flex;
+	flex-direction : row;
+	width : 100%;
+	margin : 0;
+	padding : 0;
+	background-color : #15400e;
+	list-style-type:none;
+}
+
+.nav-item {
+	padding : 15px;
+	cursor:pointer;
+}
+
+.nav-item a{
+	text-align : center;
+	text-decoration : none;
+	color : white;
+}

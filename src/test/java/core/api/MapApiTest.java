@@ -31,7 +31,14 @@ public class MapApiTest {
 //	}
 	
 	@Test
-	public void searchNaverLocation()throws Exception{
-		mapApi.searchNaverLocation("스타벅스");
+	public void searchKakaoLocation()throws Exception{
+		
+		System.out.println(mapApi.searchKakaoLocation("11번가").toString());
+		
 	}
+	
+//	@Test
+//	public void searchNaverLocation()throws Exception{
+//		mapApi.searchNaverLocation("스타벅스");
+//	}
 }

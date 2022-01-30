@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class LocationDto {
 	private String storeName;
+	private String condStoreName;
 	private String storeCategory;
 	private String storeCategoryDetail;
 	private String addressName;

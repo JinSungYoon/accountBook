@@ -33,8 +33,8 @@
 			,#{classificationOfUse}
 			,#{installmentMonth}
 			,#{cancellation}
-			,#{storeCategory}
-			,#{storeCategoryDetail}
+			,IF(#{storeCategory}='','기타',#{storeCategory})
+			,IF(#{storeCategoryDetail}='','기타',#{storeCategoryDetail})
 			,#{addressName}
 			,#{roadAddressName}
 			,#{xcoordinate}
@@ -55,11 +55,50 @@
 			]]>
     </select>
     
-	<select id="storeName" resultType="String">
-		<![CDATA[
-		select distinct store_name
+	<select id="searchStoreList" resultType="core.excel.dto.LocationDto">
+		
+		select distinct store_name,store_category,store_category_detail  
 		from card_usage_history
+		where 1=1
+		<if test="storeName != null">
+		and store_name like   CONCAT('%',#{storeName},'%')
+		</if>
+		<if test="storeCategory != null">
+		<![CDATA[
+		and store_category = #{storeCategory}
+		]]>
+		</if>
+		<if test="storeCategoryDetail != null">
+		<![CDATA[
+		and store_category_detail = #{storeCategoryDetail}
+		]]>
+		</if>
+		order by store_name
+		
+	</select>
+	
+	<select id="comboCategory" resultType="core.excel.dto.ComboDto">
+		<![CDATA[
+		select distinct store_category object_key1,store_category object_value1,store_category_detail object_key2,store_category_detail object_value2 
+		from card_usage_history
+		order by store_category,store_category_detail
 		]]>
 	</select>
+	<update id="updateLocation" parameterType = "core.excel.dto.LocationDto">
+		<![CDATA[
+		update card_usage_history
+		set store_name = #{storeName}
+		,store_category = IF(#{storeCategory}='','기타',#{storeCategory})
+		,store_category_detail = IF(#{storeCategoryDetail}='','기타',#{storeCategoryDetail})
+		,address_name = #{addressName}
+		,road_address_name = #{roadAddressName}
+		,xcoordinate = #{xcoordinate}
+		,ycoordinate = #{ycoordinate}
+		,update_date = NOW()
+		,update_user_id = 'LOCATION MAPPER'
+		where store_name = #{condStoreName}
+		]]>
+	</update>
+	
 	
 </mapper>

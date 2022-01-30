@@ -1,6 +1,10 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+<html 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
+	<th:block th:replace="/fragments/header :: headFragment"></th:block>
 <meta charset="UTF-8">
 <title>지출 통계 화면</title>
 	<!-- Bootstrap -->
@@ -13,9 +17,6 @@
     <link th:href="@{/css/statistics/statisticsStyle.css}" rel="stylesheet"/>
 </head>
 <body>
-	<div id="menu_bar">
-		 
-	</div>
 	<div id="side_bar"></div>
 	<div id="top_container">
 		<div>
@@ -41,6 +42,7 @@
 	<!-- C3 javascript -->
 	<script src="https://d3js.org/d3.v3.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
+	<!-- Kakao Map Api -->
 	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=674ad988aec29b3f66bedf5414153f76&libraries=clusterer"></script>
 	<!-- custom javascript -->
 	<script type="text/javascript" src="../js/statistics/statisticsFunc.js"></script>

@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <title>장소 찾기</title>
+	
+	<!-- csrf정보를 담기위한 meta -->
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+	
 	<!-- https://bootstrap-table.com/ -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <!-- Font awesome -->
