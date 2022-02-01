@@ -158,4 +158,10 @@ public class ExcelServiceImpl implements ExcelService {
 		return list;
 	}
 
+	@Override
+	public int getStoreListCnt(LocationDto data) throws Exception {
+		int cnt = excelMapper.getStoreListCnt(data);
+		return cnt;
+	}
+
 }

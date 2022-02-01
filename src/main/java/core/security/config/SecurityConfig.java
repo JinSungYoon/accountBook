@@ -36,10 +36,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 // 페이지 권한 설정
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/**").hasRole("MEMBER")
-                .antMatchers("*/css/**", "*/js/**", "*/img/**", "*/lib/**","*/fonts/**").permitAll()
-                //.antMatchers("/**").permitAll()
+                //.antMatchers("/admin/**").hasRole("ADMIN")
+                //.antMatchers("/user/**").hasRole("MEMBER")
+                //.antMatchers("*/css/**", "*/js/**", "*/img/**", "*/lib/**","*/fonts/**").permitAll()
+                .antMatchers("/**").permitAll()
             .and() // 로그인 설정
                 .formLogin()
                 .loginPage("/user/login")
@@ -47,9 +47,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .usernameParameter("email")
                 .permitAll()
             .and() // 로그아웃 설정
-                               .logout()
+                .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
-                .logoutSuccessUrl("/user/logout/result")
+                .logoutSuccessUrl("/")
                 .invalidateHttpSession(true)
             .and()
                 // 403 예외처리 핸들링

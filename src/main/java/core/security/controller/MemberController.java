@@ -22,13 +22,13 @@ public class MemberController {
 	    }
 
 	    // 회원가입 페이지
-	    @GetMapping("/user/signup")
+	    @GetMapping("/signup")
 	    public String dispSignup() {
-	        return "/user/signup";
+	        return "/signup";
 	    }
 
 	    // 회원가입 처리
-	    @PostMapping("/user/signup")
+	    @PostMapping("/signup")
 	    public String execSignup(MemberDto memberDto) {
 	        memberService.joinUser(memberDto);
 	        return "redirect:/user/login";

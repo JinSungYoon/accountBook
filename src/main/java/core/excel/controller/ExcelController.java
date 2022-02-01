@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.tools.DocumentationTool.Location;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -40,9 +41,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import core.api.MapApi;
 import core.board.dto.BoardDto;
+import core.common.Pagination;
 import core.excel.dto.ComboDto;
 import core.excel.dto.ExcelData;
 import core.excel.dto.LocationDto;
+import core.excel.dto.storeContainer;
 import core.excel.service.ExcelService;
 
 
@@ -101,17 +104,40 @@ public class ExcelController {
 	}
 	
 	@GetMapping("/locationMapping")
-	public ModelAndView getLocationMapping(LocationDto data) throws Exception{
+	public ModelAndView getLocationMapping(@RequestParam(required=false,defaultValue="1") int page,@RequestParam(required=false,defaultValue="1") int range) throws Exception{
 		ModelAndView mv = new ModelAndView("/excel/locationMapping");
+		
+		Pagination pagination = new Pagination(); 
+		
+		LocationDto data = new LocationDto();
+		
+		// 조회할 List 갯수 확인
+		int listCnt = excelService.getStoreListCnt(data);
+		
+		data.setPage(page);
+		data.setRange(range);
+		pagination.setPage(page);
+		pagination.setRange(range);
+		
+		// 페이지 정보 셋팅
+		data.pageInfo(page, range, listCnt);
+		pagination.pageInfo(page, range, listCnt);
+		
 		List<LocationDto> list = excelService.searchStoreList(data);
+		
 		mv.addObject("list",list);
+		mv.addObject("pagination",pagination);
 		return mv;
 	}
 	
 	@ResponseBody
 	@GetMapping("/searchStoreList")
-	public List<LocationDto> searchStoreList(@RequestParam("storeName") String storeName, @RequestParam("storeCategory") String storeCategory,@RequestParam("storeCategoryDetail") String storeCategoryDetail)throws Exception{
+	public storeContainer searchStoreList(@RequestParam(required = false,value="storeName") String storeName, @RequestParam(required = false,value="storeCategory") String storeCategory,@RequestParam(required = false,value="storeCategoryDetail") String storeCategoryDetail,@RequestParam(required=false,defaultValue="1") int page,@RequestParam(required=false,defaultValue="1") int range)throws Exception{
+		
+		storeContainer container = new storeContainer();
 		LocationDto data = new LocationDto();
+		Pagination pagination = new Pagination();
+		
 		if(!storeName.equals("")) {
 			data.setStoreName(storeName);
 		}
@@ -121,8 +147,25 @@ public class ExcelController {
 		if(!storeCategoryDetail.equals("")) {
 			data.setStoreCategoryDetail(storeCategoryDetail);
 		}
+		
+		// 조회할 List 갯수 확인
+		int listCnt = excelService.getStoreListCnt(data);
+		
+		data.setPage(page);
+		data.setRange(range);
+		pagination.setPage(page);
+		pagination.setRange(range);
+		
+		// 페이지 정보 셋팅
+		data.pageInfo(page, range, listCnt);
+		pagination.pageInfo(page, range, listCnt);
+		
 		List<LocationDto> list = excelService.searchStoreList(data);
-		return list;
+		
+		container.setList(list);
+		container.setPage(pagination);
+		
+		return container;
 	}
 	
 	@ResponseBody

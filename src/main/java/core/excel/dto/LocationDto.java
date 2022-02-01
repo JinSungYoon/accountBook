@@ -1,9 +1,10 @@
 package core.excel.dto;
 
+import core.common.Pagination;
 import lombok.Data;
 
 @Data
-public class LocationDto {
+public class LocationDto extends Pagination{
 	private String storeName;
 	private String condStoreName;
 	private String storeCategory;
@@ -12,5 +13,5 @@ public class LocationDto {
 	private String roadAddressName;
 	private Double xcoordinate;
 	private Double ycoordinate;
-
+	
 }

@@ -14,6 +14,7 @@ public interface ExcelService {
 	int saveExcelData(List<ExcelData> data)throws Exception;
 	List<LocationDto> returnMapInfo(String keyword,String browser)throws Exception;
 	List<LocationDto> searchStoreList(LocationDto data)throws Exception;
+	int getStoreListCnt(LocationDto data) throws Exception;
 	List<ComboDto> comboCategory()throws Exception;
 	List<LocationDto> updateLocation(LocationDto data) throws Exception;
 }

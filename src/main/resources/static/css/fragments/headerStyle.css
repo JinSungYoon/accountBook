@@ -5,6 +5,7 @@ body{
 .nav-container{
 	display : flex;
 	flex-direction : row;
+	float : left;
 	width : 100%;
 	margin : 0;
 	padding : 0;
@@ -21,4 +22,33 @@ body{
 	text-align : center;
 	text-decoration : none;
 	color : white;
+}
+
+.user-info{
+	float:left;
+}
+
+.dropdown{
+    position: relative;
+    display: inline-block;
+}
+.button{
+    color: wheat;
+}
+#drop-content{
+    position: absolute;
+    z-index: 1;
+}
+#drop-content a{
+    display:block;
+    font-size: 20px;
+    background-color: #dfdfdf;
+    color: black;
+    text-decoration: none;
+    padding: 2.5px 9px;
+    margin: 2px 0px 0px 0px;
+}
+
+.user-name{
+	color: white;
 }

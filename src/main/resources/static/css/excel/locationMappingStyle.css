@@ -1,23 +1,11 @@
 @charset "UTF-8";
 
-.dataContainer{
-	position: relative;
+.search{
+	float:left;
 }
 
-.tRow{
-	background-color:#d3d3d3;
-}
-
-.tRowSelected{
-	background-color:#666666;
-}
-
-table, th, td {
-   border: 1px solid #bcbcbc;
- }
-.table {
-  width: 250px;
-  float:left;
+.combo{
+	float:left;
 }
 
 /* search :bar */
@@ -34,6 +22,33 @@ input::placeholder{
   font-size: 14px;
 }
 
+
+
+table.dataContainer{
+	position: relative;
+}
+
+.tRow{
+	background-color:#d3d3d3;
+}
+
+.tRowSelected{
+	background-color:#666666;
+}
+
+.map_wrap {	
+	position:relative;
+	height:700px;
+	float:left;
+}
+
+
+.map_wrap {	
+	position:relative;
+	width:83%;
+	height:700px;
+	float:left;
+}
 .map_wrap, .map_wrap * {
 	margin:0;padding:0;
 	font-family:'Malgun Gothic',dotum,'돋움',sans-serif;
@@ -43,12 +58,7 @@ input::placeholder{
 	color:#000;
 	text-decoration: none;
 }
-.map_wrap {
-	position:relative;
-	width:85%;
-	height:700px;
-	float:right;
-}
+
 #menu_wrap {
 	position:absolute;
 	top:0;

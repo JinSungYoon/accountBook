@@ -10,8 +10,7 @@ $(document).ready(function(){
 			,url:'/comboCategory'
 			,contetType : 'application/json'
 			,success : function(result){
-				
-			console.log(result);
+			
 			categoryCombo = result;
 			
 			let category = Array.from(new Set(categoryCombo.map(data => data.objectKey1)));
@@ -46,12 +45,15 @@ $(document).ready(function(){
 			,dataType : 'json'
 			,success : function(result){
 				
-				console.log(result);
-				
 				//기존에 검색된 데이터 제거
 				removeAllChildNods($("#listBody")[0]);
 				// 새로 검색한 데이터 추가
-				result.forEach(item => addStoreRow(item));
+				result.list.forEach(item => addStoreRow(item));
+				
+				removeAllChildNods($(".pagination")[0]);
+				
+				setPagination(result.page);
+				
 			} 
 			,error : function(result){
 				console.log(result);
@@ -75,6 +77,49 @@ $(document).ready(function(){
 		tbody += `</tr>`;
 		//새로 검색한 데이터 추가
 		$("#listBody").append(tbody);
+	}
+	
+	function setPagination(page){
+		console.log(page);
+		let ul = document.getElementsByClassName('pagination');
+		
+		if(page.prev){
+			let pLi = document.createElement('li');
+			let pA =  document.createElement('a');
+			pLi.className = 'page-item';	
+			pA.className = 'page-link';
+			pA.href = '#';
+			pA.innerText	= 'Prev';
+			pLi.append(a);
+			ul[0].append(pLi);
+		}
+		
+		for(let idx=page.startPage; page.listCnt/page.pageCnt>page.endPage ? idx<=page.endPage+1 : idx<=page.endPage;idx++){
+			let li = document.createElement('li');
+			let a =  document.createElement('a');
+			if(idx==page.page){
+				li.className = 'page-item active';	
+			}else{
+				li.className = 'page-item';	
+			}
+			a.className = 'page-link';
+			a.href = '#';
+			a.innerText	= idx;
+			
+			li.append(a);
+			ul[0].append(li);
+		}
+		
+		if(page.next){
+			let nLi = document.createElement('li');
+			let nA =  document.createElement('a');
+			nLi.className = 'page-item';	
+			nA.className = 'page-link';
+			nA.href = '#';
+			nA.innerText	= 'Next';
+			nLi.append(nA);
+			ul[0].append(nLi);
+		}
 		
 	}
 	
@@ -97,7 +142,7 @@ $(document).ready(function(){
 	    
 	});
 	
-	$(document).on("click","li",function(e){
+	$(document).on("click",".item",function(e){
 		
 		var itemElement = $(this).closest('li');
 		
@@ -105,27 +150,28 @@ $(document).ready(function(){
 		
 		let tr  = document.getElementById("listBody").children[trIndex];
 		
-		if(trIndex==''){
+		if(trIndex=='-1'){
 			alert("좌측 표에셔 변경할 장소명을 선택해 주세요");
 		}else{
 			let storeName = document.getElementById("listBody").children[trIndex].children[1].children[0].children[0].innerText;
 			
 			let location = {};
 			
-			console.log(storeName);
-			
 			for(let item of itemElement[0].children[1].children){
-	
 				location[item.id] = item.innerText;
 			}
 			
 			location['condStoreName'] = storeName;
 			
-			if(confirm(`${storeName}을 선택하신 지역 정보로 업데이트 하시겠습니까?`)){
+			if(confirm(`${location.storeName}으로 ${storeName}을 업데이트 하시겠습니까?`)){
 				updateLocation(location);
 			}
 		}
 				
+	});
+	
+	$(document).on("click","img",function(e){
+		
 	});
 	
 	$("#categoryCombo").change(function(e){
@@ -143,15 +189,13 @@ $(document).ready(function(){
 	// 키워드 입력란에 Enter key 이벤트 추가
 	$("#mapKeyword").keypress(function(e){
 		if(e.keyCode==13) {
-			let data  = document.getElementById("mapKeyword").value; 
-	    	searchLocation(data,'kakao');
+			searchPlaces();
     	}
 	});
 	
 	// 버튼으로 정보검색 실행
 	$("#mapSearch").click(function(e){
-		let data  = document.getElementById("mapKeyword").value; 
-    	searchLocation(data,'kakao');
+		searchPlaces();
 	});
 	
 	$("#storeKeyword").keypress(function(e){
@@ -246,7 +290,7 @@ $(document).ready(function(){
 	// 키워드 검색을 요청하는 함수입니다
 	function searchPlaces() {
 	
-	    var keyword = document.getElementById('keyword').value;
+	    var keyword = document.getElementById('mapKeyword').value;
 	
 	    if (!keyword.replace(/^\s+|\s+$/g, '')) {
 	        alert('키워드를 입력해주세요!');
@@ -444,9 +488,12 @@ $(document).ready(function(){
 	
 	function addOptions(comboBox,data){
 		
+		removeAllChildNods(comboBox);
+		
 		let option = document.createElement('option');
 		option.innerText = '';
 		comboBox.append(option);
+		
 		for(let combo of data){
 			option = document.createElement('option');
 			option.innerText = combo;
@@ -481,6 +528,7 @@ $(document).ready(function(){
 					let categoryDetail = $("#categoryDetailCombo option:selected").val();
 					
 					searchStoreList(keyword,category,categoryDetail);
+					
 			}
 			,error : function(result){
 				alert(`Error occured : ${result}`);
@@ -489,6 +537,55 @@ $(document).ready(function(){
 			
 		});	// End ajax
 		
+	}
+	
+	//이전 버튼 이벤트
+	function fn_prev(page, range, rangeSize) {
+
+		var page = ((range - 2) * rangeSize) + 1;
+
+		var range = range - 1;
+
+		
+
+		var url = "${pageContext.request.contextPath}/board/getBoardList";
+
+		url = url + "?page=" + page;
+
+		url = url + "&range=" + range;
+
+		
+
+		location.href = url;
+
+	}
+
+	//페이지 번호를 동적으로 생성할 때도 있어서 아래와 같이 이벤트 선언
+	$(document).on("click",'.page-link',function(e){
+		let a = $(this).closest('a');
+		let page = a[0].innerText;
+		let range = 1;
+		let url = "/locationMapping";
+		url = url + "?page=" + page;
+		url = url + "&range=" + range;
+		location.href = url;
+	});
+
+	//다음 버튼 이벤트
+	function fn_next(page, range, rangeSize) {
+
+		var page = parseInt((range * rangeSize)) + 1;
+
+		var range = parseInt(range) + 1;
+
+		var url = "${pageContext.request.contextPath}/board/getBoardList";
+
+		url = url + "?page=" + page;
+
+		url = url + "&range=" + range;
+
+		location.href = url;
+
 	}
 	
 });

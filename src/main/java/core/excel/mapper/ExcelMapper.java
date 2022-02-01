@@ -16,6 +16,7 @@ public interface ExcelMapper {
 	void saveExcelData(ExcelData data) throws Exception;
 	int checkApplyExcelCount() throws Exception;
 	List<LocationDto> searchStoreList(LocationDto data) throws Exception;
+	int getStoreListCnt(LocationDto data) throws Exception;
 	void updateLocation(LocationDto data) throws Exception;
 	List<ComboDto> comboCategory() throws Exception;
 }

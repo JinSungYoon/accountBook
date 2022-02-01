@@ -8,7 +8,7 @@
     <h1>회원 가입</h1>
     <hr>
 
-    <form th:action="@{/user/signup}" method="post" onsubmit="return formSubmit();">
+    <form th:action="@{/signup}" method="post" onsubmit="return formSubmit();">
         <input type="text" name="email" placeholder="이메일" required>
         <div>
 	        <input type="password" name="password" placeholder="비밀번호" onchange="checkPwd()" required>

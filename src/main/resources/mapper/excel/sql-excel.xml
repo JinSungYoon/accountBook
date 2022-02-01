@@ -55,9 +55,10 @@
 			]]>
     </select>
     
-	<select id="searchStoreList" resultType="core.excel.dto.LocationDto">
-		
-		select distinct store_name,store_category,store_category_detail  
+	<select id="searchStoreList" parameterType = "core.excel.dto.LocationDto" resultType="core.excel.dto.LocationDto">
+		select *
+		from(
+		select store_name,store_category,store_category_detail  
 		from card_usage_history
 		where 1=1
 		<if test="storeName != null">
@@ -73,8 +74,34 @@
 		and store_category_detail = #{storeCategoryDetail}
 		]]>
 		</if>
+		group by store_name,store_category,store_category_detail
 		order by store_name
-		
+		)store_list
+		LIMIT #{startList},#{listSize}
+	</select>
+	
+	<select id="getStoreListCnt" parameterType = "core.excel.dto.LocationDto" resultType="int">
+		select count(*)
+		from(
+		select store_name,store_category,store_category_detail  
+		from card_usage_history
+		where 1=1
+		<if test="storeName != null">
+		and store_name like   CONCAT('%',#{storeName},'%')
+		</if>
+		<if test="storeCategory != null">
+		<![CDATA[
+		and store_category = #{storeCategory}
+		]]>
+		</if>
+		<if test="storeCategoryDetail != null">
+		<![CDATA[
+		and store_category_detail = #{storeCategoryDetail}
+		]]>
+		</if>
+		group by store_name,store_category,store_category_detail
+		order by store_name
+		) store_list
 	</select>
 	
 	<select id="comboCategory" resultType="core.excel.dto.ComboDto">
@@ -85,11 +112,29 @@
 		]]>
 	</select>
 	<update id="updateLocation" parameterType = "core.excel.dto.LocationDto">
-		<![CDATA[
+		
 		update card_usage_history
 		set store_name = #{storeName}
-		,store_category = IF(#{storeCategory}='','기타',#{storeCategory})
-		,store_category_detail = IF(#{storeCategoryDetail}='','기타',#{storeCategoryDetail})
+		<choose>
+			<when test="storeCategory != null and storeCategoryDetail != null">
+			,store_category =#{storeCategory}
+			,store_category_detail = #{storeCategoryDetail}
+			</when>
+			<when test="storeCategory == null or storeCategoryDetail == null">
+				<if test="storeCategory == null">
+				,store_category = #{storeCategoryDetail}
+				,store_category_detail = #{storeCategoryDetail}
+				</if>
+				<if test="storeCategoryDetail == null">
+				,store_category = #{storeCategory}
+				,store_category_detail = #{storeCategory}
+				</if>
+			</when>
+			<otherwise>
+			,store_category = IF(#{storeCategory}='','기타',#{storeCategory})
+			,store_category_detail = IF(#{storeCategoryDetail}='','기타',#{storeCategoryDetail})	
+			</otherwise>
+		</choose>
 		,address_name = #{addressName}
 		,road_address_name = #{roadAddressName}
 		,xcoordinate = #{xcoordinate}
@@ -97,7 +142,7 @@
 		,update_date = NOW()
 		,update_user_id = 'LOCATION MAPPER'
 		where store_name = #{condStoreName}
-		]]>
+		
 	</update>
 	
 	

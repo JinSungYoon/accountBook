@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
 
 import core.excel.dto.ExcelData;
+import core.excel.dto.LocationDto;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -56,9 +57,8 @@ public class ExcelMapperTest {
 	
 	@Test
 	public void updateLocation()throws Exception{
-		ExcelData data = new ExcelData();
+		LocationDto data = new LocationDto();
 		data.setStoreName("11번가");
-		data.setCondStoreName("11번가");
 		data.setAddressName("서울 중구 남대문로5가 541");
 		data.setRoadAddressName("서울 중구 한강대로 416");
 		data.setStoreCategory("");
