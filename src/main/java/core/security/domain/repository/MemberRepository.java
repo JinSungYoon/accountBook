@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import core.security.domain.entity.MemberEntity;
 
 
-
 public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
 	Optional<MemberEntity> findByEmail(String userEmail);
 }

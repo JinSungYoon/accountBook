@@ -24,10 +24,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import core.api.MapApi;
+import core.common.dto.ConditionDto;
 import core.excel.dto.ComboDto;
 import core.excel.dto.ExcelData;
 import core.excel.dto.LocationDto;
 import core.excel.mapper.ExcelMapper;
+import core.statistics.dto.StatisticsCondDto;
 
 @Service
 public class ExcelServiceImpl implements ExcelService {
@@ -153,15 +155,21 @@ public class ExcelServiceImpl implements ExcelService {
 	}
 
 	@Override
-	public List<ComboDto> comboCategory() throws Exception {
-		List<ComboDto> list = excelMapper.comboCategory();
+	public int getStoreListCnt(LocationDto data) throws Exception {
+		int cnt = excelMapper.getStoreListCnt(data);
+		return cnt;
+	}
+
+	@Override
+	public List<ExcelData> searchTransactionHistory(ConditionDto cond) throws Exception {
+		List<ExcelData> list = excelMapper.searchTransactionHistory(cond);
 		return list;
 	}
 
 	@Override
-	public int getStoreListCnt(LocationDto data) throws Exception {
-		int cnt = excelMapper.getStoreListCnt(data);
-		return cnt;
+	public List<ComboDto> comboCategory(ConditionDto cond) throws Exception {
+		List<ComboDto> list = excelMapper.comboCategory(cond);
+		return list;
 	}
 
 }

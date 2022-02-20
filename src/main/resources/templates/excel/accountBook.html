@@ -23,39 +23,44 @@
     <link th:href="@{/css/excel/accountBookStyle.css}" rel="stylesheet"/>
   </head>
   <div>
+	Date <input type="text" id="monthpicker">
+  </div>
+  <div>
   	<span>
   		<button id="btnAdd" th:type="button" onclick="return addRow()">추가</button>
   		<button id="btndelete" th:type="button" onclick="return deleteRow()">삭제</button>
   		<button id="btnSave" class="btn btn-send-data" th:type="button" onclick="return dataSave()">저장</button>
   		<input id="rowIndex" class="rowIndex" type="hidden" name="rowIndex" th:value="${rowIndex}">
-		<input id="keyword" class="keyword" type="text" name="keyword" maxlength=255 th:value="${keyword}" autocomplete="off">
+		<input id="keyword" class="keyword" type="text" name="keyword" maxlength=255 th:value="${keyword}" hidden="hidden">
   	</span>
   </div>
   <body>
-  	<table id="accountBook" class="table">
-  		<thead id="listHeader" class="thead-dark">
-  			<tr>
-	  			<th id="checkBox"				scope="col" class="align-middle"><input id="checkAll" type="checkbox" value=""></th>
-	  			<th id="approvalNumber" 		scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">승인번호</th>
-	  			<th id="storeName"      		scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">가맹점명</th>
-	  			<th id="amountOfPayment"		scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">거래금액</th>
-	  			<th id="paymentDate"    		scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">거래일시</th>
-	  			<th id="usedCardNumber"			scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">카드번호</th>
-	  			<th id="classificationOfUse"	scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">이용구분</th>
-	  			<th id="installmentMonth"		scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">할부개월</th>
-	  			<th id="cancellation"			scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">취소여부</th>
-	  			<th id="storeCategory"			scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">업체분류</th>
-	  			<th id="storeCategoryDetail"	scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">업체세부분류</th>
-	  			<th id="addressName"			scope="col"	class="align-middle" style="display:none">주소</th>
-	  			<th id="roadAddressName"		scope="col"	class="align-middle" style="display:none">도로명주소</th>
-	  			<th id="xcoordinate"			scope="col"	class="align-middle" style="display:none">x좌표</th>
-	  			<th id="ycoordinate"			scope="col"	class="align-middle" style="display:none">y좌표</th>
-  			</tr>
-  		</thead>
-  		<tbody id="listBody" class="thead-light">
-  			
-  		</tbody>
-  	</table>
+  	<div id="listTable">
+	  	<table id="accountBook" class="table">
+	  		<thead id="listHeader" class="thead-dark">
+	  			<tr>
+		  			<th id="checkBox"				scope="col" class="align-middle"><input id="checkAll" type="checkbox" value=""></th>
+		  			<th id="approvalNumber" 		scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">승인번호</th>
+		  			<th id="storeName"      		scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">가맹점명</th>
+		  			<th id="amountOfPayment"		scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">거래금액</th>
+		  			<th id="paymentDate"    		scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">거래일시</th>
+		  			<th id="usedCardNumber"			scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">카드번호</th>
+		  			<th id="classificationOfUse"	scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">이용구분</th>
+		  			<th id="installmentMonth"		scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">할부개월</th>
+		  			<th id="cancellation"			scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">취소여부</th>
+		  			<th id="storeCategory"			scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">업체분류</th>
+		  			<th id="storeCategoryDetail"	scope="col" class="align-middle"><input class="radio" name="radio" type="radio" value="">업체세부분류</th>
+		  			<th id="addressName"			scope="col"	class="align-middle" style="display:none">주소</th>
+		  			<th id="roadAddressName"		scope="col"	class="align-middle" style="display:none">도로명주소</th>
+		  			<th id="xcoordinate"			scope="col"	class="align-middle" style="display:none">x좌표</th>
+		  			<th id="ycoordinate"			scope="col"	class="align-middle" style="display:none">y좌표</th>
+	  			</tr>
+	  		</thead>
+	  		<tbody id="listBody" class="thead-light">
+	  			
+	  		</tbody>
+	  	</table>
+  	</div>
     <div>
 	  	<span>
 	  		<button id="btnAddExcelRow" th:type="button" onclick="return addExcelRow()">추가</button>
@@ -63,14 +68,16 @@
 	  		<button id="copyExcelColumn" th:type="button" onclick="return copyExcelColumn()">복사하기</button>
 	  		<button id="addExcelColumn" th:type="button" onclick="return addExcelColumn()">추가하기</button>
 	  		<input type="file" onchange="readExcel()">
-	  	</span>
-	  </div>
-    <table class="table table-striped">
-	    <thead id="excelHeader">
-	    </thead>
-	    <tbody id="excelBody">
-	    </tbody>
-  </table>
+		</span>
+	</div>
+    <div id="excelTable">
+	    <table class="table table-striped">
+		    <thead id="excelHeader">
+		    </thead>
+		    <tbody id="excelBody">
+		    </tbody>
+	  	</table>
+  	</div>
   <div id="displayDiv">
   
   </div>
@@ -90,13 +97,18 @@
 	    }
 	})();
   </script>
-  <!-- Bootstrap js파일 -->
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+  <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+  <script th:src="@{/webjars/jquery-ui/jquery-ui.min.js}"/>"></script>
   <!-- timepicker를 위한 js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+  <!-- Monthpicker -->
+  <script th:src="@{../js/jquery.mtz.monthpicker.js}"></script>
   <!-- excel 추출 js파일 -->
   <script lang="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+  <!-- Custom Js -->
+  <script type="text/javascript" src="../js/fragments/header.js"></script>
   <script type="text/javascript" src="../js/excel/excelUpload.js"></script>
   </body>
 </html>

@@ -72,38 +72,10 @@
 		where payment_date between DATE_FORMAT(STR_TO_DATE(#{fromDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s') and DATE_FORMAT(STR_TO_DATE(#{toDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s')
 	</select>
 	
-	<insert id="insertStoreInformation" parameterType="core.statistics.dto.StoreDto">
-		<![CDATA[
-			REPLACE INTO store_information
-			(
-				business_number
-				,store_name
-				,store_category
-				,store_category_detail
-				,address_name
-				,road_address_name
-				,x_location
-				,y_location
-				,create_date
-				,create_user_id
-				,update_date
-				,update_user_id
-			)
-			VALUES
-			(
-				#{businessNumber}
-				,#{storeName}
-				,#{storeCategory}
-				,#{storeCategoryDetail}
-				,#{addressName}
-				,#{roadAddressName}
-				,#{xLocation}
-				,#{yLocation}
-				,IFNULL(#{createDate},NOW()) 
-				,IFNULL(#{creatUserId},'SYSADMIN')
-				,IFNULL(#{updateDate},NOW())
-				,IFNULL(#{updateUserId},'SYSADMIN')
-			)
-		]]>
-	</insert>
+	<select id="searchTransactionHistory" parameterType="core.statistics.dto.StatisticsCondDto" resultType="core.excel.dto.ExcelData" >
+		select *
+		from card_usage_history
+		where 1=1
+		and payment_date between DATE_FORMAT(STR_TO_DATE(:fromDate, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s') and DATE_FORMAT(STR_TO_DATE(:toDate, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s')
+	</select>
 </mapper>

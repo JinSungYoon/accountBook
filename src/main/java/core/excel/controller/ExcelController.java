@@ -1,47 +1,28 @@
 package core.excel.controller;
 
-import java.io.FileOutputStream;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.tools.DocumentationTool.Location;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
+
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+
+
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import core.api.MapApi;
-import core.board.dto.BoardDto;
-import core.common.Pagination;
+import core.common.dto.ConditionDto;
+import core.common.dto.Pagination;
+import core.common.service.CommonService;
 import core.excel.dto.ComboDto;
 import core.excel.dto.ExcelData;
 import core.excel.dto.LocationDto;
@@ -51,11 +32,14 @@ import core.excel.service.ExcelService;
 
 @Controller
 public class ExcelController {
+	private Logger logger = LoggerFactory.getLogger(ExcelController.class);
 	
-	private Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	private ExcelService excelService;
+	
+	@Autowired
+	private CommonService commonService;
 	
 	
 	@GetMapping("/accountBook")
@@ -65,11 +49,12 @@ public class ExcelController {
 	
 	@ResponseBody
 	@PostMapping("/accountBook")
-	public String readExcel(@RequestParam("file") MultipartFile file,Model model) throws IOException {
+	public ModelAndView readExcel(@RequestParam("file") MultipartFile file) throws IOException {
+		ModelAndView mv = new ModelAndView();
 		List<ExcelData> dataList = new ArrayList<>(); 
 		dataList = excelService.showExcelData(file);
-		model.addAttribute("datas",dataList);
-		return "/excel/accountBook";
+		mv.addObject("datas",dataList);
+		return mv;
 	}
 	
 	@GetMapping("/searchLocation")
@@ -103,14 +88,13 @@ public class ExcelController {
 		return cnt;
 	}
 	
+	// 처음에 장소매핑 화면을 호출할때 사용하는 메서드
 	@GetMapping("/locationMapping")
-	public ModelAndView getLocationMapping(@RequestParam(required=false,defaultValue="1") int page,@RequestParam(required=false,defaultValue="1") int range) throws Exception{
+	public ModelAndView getLocationMapping(@RequestParam(required = false,value="storeName",defaultValue="") String storeName, @RequestParam(required = false,value="storeCategory",defaultValue="") String storeCategory,@RequestParam(required = false,value="storeCategoryDetail",defaultValue="") String storeCategoryDetail,@RequestParam(required=false,defaultValue="1") int page,@RequestParam(required=false,defaultValue="1") int range) throws Exception{
 		ModelAndView mv = new ModelAndView("/excel/locationMapping");
-		
 		Pagination pagination = new Pagination(); 
-		
 		LocationDto data = new LocationDto();
-		
+		ConditionDto cond = new ConditionDto();
 		// 조회할 List 갯수 확인
 		int listCnt = excelService.getStoreListCnt(data);
 		
@@ -124,19 +108,24 @@ public class ExcelController {
 		pagination.pageInfo(page, range, listCnt);
 		
 		List<LocationDto> list = excelService.searchStoreList(data);
+		List<ComboDto> comboCategory = excelService.comboCategory(cond);
 		
 		mv.addObject("list",list);
 		mv.addObject("pagination",pagination);
+		mv.addObject("comboCategory",comboCategory);
+		
 		return mv;
 	}
 	
+	// 정보 검색 및 페이지 변경에 따른 검색 결과 반환 메서드
 	@ResponseBody
 	@GetMapping("/searchStoreList")
-	public storeContainer searchStoreList(@RequestParam(required = false,value="storeName") String storeName, @RequestParam(required = false,value="storeCategory") String storeCategory,@RequestParam(required = false,value="storeCategoryDetail") String storeCategoryDetail,@RequestParam(required=false,defaultValue="1") int page,@RequestParam(required=false,defaultValue="1") int range)throws Exception{
+	public storeContainer searchStoreList(@RequestParam(required = false,value="storeName",defaultValue="") String storeName, @RequestParam(required = false,value="storeCategory",defaultValue="") String storeCategory,@RequestParam(required = false,value="storeCategoryDetail",defaultValue="") String storeCategoryDetail,@RequestParam(required=false,defaultValue="1") int page,@RequestParam(required=false,defaultValue="1") int range)throws Exception{
 		
 		storeContainer container = new storeContainer();
 		LocationDto data = new LocationDto();
 		Pagination pagination = new Pagination();
+		ConditionDto cond = new ConditionDto();
 		
 		if(!storeName.equals("")) {
 			data.setStoreName(storeName);
@@ -150,7 +139,6 @@ public class ExcelController {
 		
 		// 조회할 List 갯수 확인
 		int listCnt = excelService.getStoreListCnt(data);
-		
 		data.setPage(page);
 		data.setRange(range);
 		pagination.setPage(page);
@@ -161,18 +149,13 @@ public class ExcelController {
 		pagination.pageInfo(page, range, listCnt);
 		
 		List<LocationDto> list = excelService.searchStoreList(data);
+		List<ComboDto> comboCategory = excelService.comboCategory(cond);
 		
 		container.setList(list);
 		container.setPage(pagination);
+		container.setComboCategory(comboCategory);
 		
 		return container;
-	}
-	
-	@ResponseBody
-	@GetMapping("/comboCategory")
-	public List<ComboDto> comboCategory()throws Exception{
-		List<ComboDto> combo = excelService.comboCategory();
-		return combo;
 	}
 	
 	@ResponseBody
@@ -182,4 +165,21 @@ public class ExcelController {
 		return list;
 	}
 	
+	@ResponseBody
+	@GetMapping("/transactionHistory")
+	public List<ExcelData> showTransactionHistory(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate)throws Exception {
+		ConditionDto cond = new ConditionDto();
+		
+		String lastDate = commonService.getLastDateTimeOfMonth(fromDate);
+		
+		cond.setFromDate(fromDate);
+		cond.setToDate(lastDate);
+		List<ExcelData> list = excelService.searchTransactionHistory(cond);
+		List<ComboDto> comboCategory = excelService.comboCategory(cond);
+		
+		
+		return list;
+	}
+	
+		
 }

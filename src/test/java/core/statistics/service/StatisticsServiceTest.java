@@ -1,19 +1,11 @@
 package core.statistics.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
 
-import core.statistics.dto.AmountUsedDto;
-import core.statistics.dto.PositionDto;
-import core.statistics.dto.StatisticsCondDto;
-import core.statistics.dto.StatisticsDto;
-
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @PropertySource("classpath:/application.properties")
 public class StatisticsServiceTest {
 	
@@ -30,15 +22,21 @@ public class StatisticsServiceTest {
 //		list.forEach(data -> System.out.println(data.toString()));
 //	}
 	
-	@Test
-	public void searchLocationCoordinate() throws Exception{
-		List<PositionDto> list = new ArrayList<>();
-		StatisticsCondDto cond = new StatisticsCondDto();
-		cond.setFromDate("20210101000000");
-		cond.setToDate("20210131000000");
-		list = service.searchLocationCoordinate(cond);
-		list.forEach(data -> System.out.println(data.toString()));
-		
-	}
+//	@Test
+//	public void searchLocationCoordinate() throws Exception{
+//		List<PositionDto> list = new ArrayList<>();
+//		StatisticsCondDto cond = new StatisticsCondDto();
+//		cond.setFromDate("20210101000000");
+//		cond.setToDate("20210131000000");
+//		list = service.searchLocationCoordinate(cond);
+//		list.forEach(data -> System.out.println(data.toString()));
+//		
+//	}
 	
+	@Test
+	public void getLastDateOfMonth() throws Exception{
+		
+		String lastDay = service.getLastDateTimeOfMonth("20210201");
+		System.out.println(lastDay);
+	}
 }

@@ -29,21 +29,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     public void configure(WebSecurity web) throws Exception
     {
         // static 디렉터리의 하위 파일 목록은 인증 무시 ( = 항상통과 )
-        web.ignoring().antMatchers("*/css/**", "*/js/**", "*/img/**", "*/lib/**","/fonts/**");
+        web.ignoring().antMatchers("*/css/**", "*/js/**", "*/img/**", "*/lib/**","/fonts/**","*/webjars/**");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 // 페이지 권한 설정
-                //.antMatchers("/admin/**").hasRole("ADMIN")
-                //.antMatchers("/user/**").hasRole("MEMBER")
-                //.antMatchers("*/css/**", "*/js/**", "*/img/**", "*/lib/**","*/fonts/**").permitAll()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/user/**","/statistics/**").hasRole("MEMBER")
+                .antMatchers("*/css/**", "*/js/**", "*/img/**", "*/lib/**","*/fonts/**","*/webjars/**").permitAll()
                 .antMatchers("/**").permitAll()
             .and() // 로그인 설정
                 .formLogin()
                 .loginPage("/user/login")
-                .defaultSuccessUrl("/main")
+                .defaultSuccessUrl("/statistics/main")
                 .usernameParameter("email")
                 .permitAll()
             .and() // 로그아웃 설정

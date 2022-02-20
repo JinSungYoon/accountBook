@@ -1,0 +1,6 @@
+@charset "UTF-8";
+
+#storeTable{
+	overflow:scroll;
+	height : 500px;
+}

@@ -3,20 +3,11 @@ package core.security.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import core.security.domain.entity.MemberEntity;
 
 
-
-@Getter
-@Setter
+@Data
 @ToString
 @NoArgsConstructor
 public class MemberDto {

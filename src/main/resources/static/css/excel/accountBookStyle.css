@@ -22,3 +22,13 @@
 .tRow{
 	background-color:#d3d3d3;
 }
+
+#listTable{
+	overflow:scroll;
+	height : 300px;
+}
+
+#excelTable{
+	overflow:scroll;
+	height : 300px;
+}

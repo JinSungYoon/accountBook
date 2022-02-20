@@ -2,7 +2,7 @@ package core.security.domain.entity;
 
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -20,7 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
+@Data
 @Entity
 @Table(name = "member")
 public class MemberEntity implements UserDetails {

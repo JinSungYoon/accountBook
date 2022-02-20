@@ -4,11 +4,10 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import core.common.dto.ConditionDto;
 import core.excel.dto.ComboDto;
 import core.excel.dto.ExcelData;
 import core.excel.dto.LocationDto;
-import core.statistics.dto.StatisticsCondDto;
-import core.statistics.dto.StatisticsDto;
 
 @Mapper
 public interface ExcelMapper {
@@ -18,5 +17,6 @@ public interface ExcelMapper {
 	List<LocationDto> searchStoreList(LocationDto data) throws Exception;
 	int getStoreListCnt(LocationDto data) throws Exception;
 	void updateLocation(LocationDto data) throws Exception;
-	List<ComboDto> comboCategory() throws Exception;
+	List<ComboDto> comboCategory(ConditionDto cond) throws Exception;
+	List<ExcelData> searchTransactionHistory(ConditionDto cond) throws Exception;
 }

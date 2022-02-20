@@ -1,60 +1,72 @@
-/*
-var reader = new FileReader();
 
-var excelFileDate = null;
+let today = new Date();
 
-var inputElement = document.getElementById("inputExcelRead");
-
-inputElement.addEventListener('change',function(){
-	reader.readAsArrayBuffer(event.target.files[0]);
-},false);
-
-reader.onload = function (e) {
-	
-	var data = e.target.result;
-	var workbook = XLSX.read(data,{type:"array"});
-	
-	var sheetNames = workbook.SheetNames;
-	var sheet = workbook.Sheets[sheetNames];
-	excelFileData = XLSX.utils.sheet_to_json(sheet);
-	
-	var thead = '';
-	var tbody = '';
-	var theadObject;
-	var col = Object.keys(excelFileData[0]);
-	
-	console.log(excelFileData);
-	
-	for(var row=0;row<excelFileData.length;row++){
-		if(row==0){
-			// Header와 동일한 데이터는 제거하기 위해
-			theadObject = excelFileData[row];
-			thead += '<tr>';
-			for(var idx=0; idx<col.length;idx++){
-				var data = excelFileData[row][col[idx]]==undefined?'':excelFileData[row][col[idx]];
-				thead += '<th scope="col">'+data+'</th>';
-			}
-			thead += '</tr>';
-		}else{
-			// Header 칼럼과 동일한 데이터는 추가하지 않기 위해
-			if(JSON.stringify(theadObject) != JSON.stringify(excelFileData[row])){
-				tbody += '<tr>';
-				for(var idx=0; idx<col.length;idx++){
-					var data = excelFileData[row][col[idx]]==undefined?'':excelFileData[row][col[idx]];
-					tbody += '<td>'+data+'</td>';
-				}
-				tbody += '</tr>';
-			}
-		}
-	}
-	
-	$("#excelHead").empty();
-	$("#excelHead").append(thead);
-	$("#excelBody").empty();
-	$("#excelBody").append(tbody);
-	
+/* MonthPicker 옵션 */
+options = {
+	pattern: 'yyyy-mm', // Default is 'mm/yyyy' and separator char is not mandatory
+	selectedYear: today.getFullYear(),
+	startYear: 2008,
+	finalYear: 2999,
+	openOnFocus : true,
+	monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월']
 };
-*/
+
+/* MonthPicker Set */
+$('#monthpicker').monthpicker(options);
+
+$("#monthpicker").change(function(){
+	year = $("#monthpicker").val().slice(0,4); 
+	month = $("#monthpicker").val().slice(-2);
+	firstDate = new Date(year,month,1);
+	lastDate = new Date(year,parseInt(month),0);
+	
+	fromDt = firstDate.getFullYear()+String(parseInt(firstDate.getMonth(),10)).padStart(2,'0')+String(firstDate.getDate()).padStart(2,'0')+"000000";
+	toDt = lastDate.getFullYear()+String(parseInt(lastDate.getMonth()+1,10)).padStart(2,'0')+String(lastDate.getDate()).padStart(2,'0')+"235959";
+	callTransactionHistory(fromDt,toDt);
+});
+
+function callTransactionHistory(from,to){
+	var dataObj = new Object();
+		dataObj.fromDate = fromDt;
+		dataObj.toDate = toDt;
+		
+		console.log(dataObj);
+			
+		$.ajax({
+			type : 'GET',
+			url:'/transactionHistory',
+			data : dataObj,
+			dataType : 'json',
+			contentType: 'application/json',
+			success : function(result){
+				console.log(result);
+				
+				// 기존에 존재하는 데이터 모두 제거
+				removeAllChildNods($("#listBody")[0]);
+				// 조회한 데이터 Display
+				for(let item of result){
+					addRow('','',item);	
+				}
+			},
+			error : function(result){
+				alert(`Error occured : ${result}`);
+				console.log(result);
+			}
+		});
+}
+
+var now = new Date();
+var year,month,firstDate,lastDate,fromDt,toDt;
+
+firstDate = new Date(now.getFullYear(),now.getMonth(),1);
+lastDate = new Date(now.getFullYear(),now.getMonth()+1,0);
+year = firstDate.getFullYear();
+month = String(parseInt(firstDate.getMonth(),10)+1).padStart(2,'0');
+fromDt = firstDate.getFullYear()+String(parseInt(firstDate.getMonth(),10)).padStart(2,'0')+String(firstDate.getDate()).padStart(2,'0')+"000000";
+toDt = lastDate.getFullYear()+String(parseInt(lastDate.getMonth(),10)).padStart(2,'0')+String(lastDate.getDate()).padStart(2,'0')+"235959";
+
+// 이번달 기본 셋팅
+$("#monthpicker").val(year+"-"+month);
 
 
 let excelCol = '';
@@ -114,7 +126,7 @@ function readExcel() {
     reader.readAsBinaryString(input.files[0]);
 }
 
-function addRow(index='',val=''){
+function addRow(index='',val='',data=''){
 	let tr = document.getElementById("listHeader").children[0];
 	let th = document.getElementById("listHeader").children[0].children;
 	let tList = document.getElementById("listBody").children;
@@ -131,6 +143,7 @@ function addRow(index='',val=''){
 	
 	tbody += `<tr id=${tList.length+1} class="tRow">`;
 	for(let idx=0;idx<th.length;idx++){
+    	
     	if(idx==0){
 			tbody += `<td id=${th[idx]["id"]} scope="row"><div class="dataContainer"><input class="checkBox" name="checkboxName" type="checkbox" value="" pattern=${dataPattern[idx]} ${mandatory[idx]}></div></td>`;
 		}
@@ -140,6 +153,11 @@ function addRow(index='',val=''){
 			}else{
 				value="";
 			}
+			if(data!=""){
+				let v = data[$("#listHeader")[0].children[0].children[idx].id];
+				value = v!=null ? v : '';
+			}
+			
 			if(idx==2){	// 상호명입력 및 상호명에 대한 지리 데이터를 검색하기 위한 버튼
 				tbody += `<td id=${th[idx]["id"]}><div class="dataContainer"><input class="dataInput" type="text" value="${value}" pattern=${dataPattern[idx]} ${mandatory[idx]}><button th:type="button" id="searchBtn"><i class="fas fa-search"></i></button></div></td>`;
 			}else if(idx==4){	
@@ -148,7 +166,12 @@ function addRow(index='',val=''){
 				// datetimepicker 적용
 				tbody += `<td id=${th[idx]["id"]}><div class="dataContainer"><input id="datetimepicker" type="text" value="${changeDateFormat(value)}" pattern=${dataPattern[idx]} ${mandatory[idx]}></div></td>`;
 			}else if(idx==8){
-				tbody += `<td id=${th[idx]["id"]}><div class="dataContainer"><input class="cancelBox" name="cancelName" type="checkbox" value="N" pattern=${dataPattern[idx]} ${mandatory[idx]}></div></td>`;
+				if(value != 'N' && value !=''){
+					tbody += `<td id=${th[idx]["id"]}><div class="dataContainer"><input class="cancelBox" name="cancelName" type="checkbox" value="${value}" pattern=${dataPattern[idx]} ${mandatory[idx]} checked></div></td>`;
+				}else{
+					tbody += `<td id=${th[idx]["id"]}><div class="dataContainer"><input class="cancelBox" name="cancelName" type="checkbox" value="${value}" pattern=${dataPattern[idx]} ${mandatory[idx]}></div></td>`;	
+				}
+				
 			}else{
 				tbody += `<td id=${th[idx]["id"]}><div class="dataContainer"><input class="dataInput" type="text" value="${value}" pattern=${dataPattern[idx]} ${mandatory[idx]}></div></td>`;
 			}
@@ -183,26 +206,35 @@ $(document).on(('click','focus'), '#datetimepicker', function (event) {
 function changeDateFormat(input){
 	let value = input;
 	
+	let year,month,date,hours,minutes,seconds;
+	let cur = new Date();
+	
+	year = month = date = hours = minutes = seconds = '';
+	
 	if(value!=''){
+		
+		
 	
-	let splitDate = value.split(' ');
+		let splitDate = value.split(' ');
+		
+		
+		let yearMonth = splitDate[0]!=undefined ? splitDate[0].split(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]/gi) : '';
+		year    = yearMonth.filter(data=>data.length>=4)[0]!=undefined ? yearMonth.filter(data=>data.length>=4)[0] : String(new Date().getFullYear());
+		month   = yearMonth.filter(data=>data.length==2)[0]!=undefined ? yearMonth.filter(data=>data.length==2)[0] : String(new Date().getMonth()+1).padStart(2,'0');
+		date    = yearMonth.filter(data=>data.length==2)[1]!=undefined ? yearMonth.filter(data=>data.length==2)[1] : String(new Date().getDate()).padStart(2,'0');	
 	
-	let yearMonth = splitDate[0].split(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]/gi);
-	let time = splitDate[1].split(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]/gi);
-	
-	let year    = yearMonth.filter(data=>data.length>=4)[0]!=undefined ? yearMonth.filter(data=>data.length>=4)[0] : String(new Date().getFullYear());
-	let month   = yearMonth.filter(data=>data.length==2)[0]!=undefined ? yearMonth.filter(data=>data.length==2)[0] : String(new Date().getMonth()+1).padStart(2,'0');
-	let date    = yearMonth.filter(data=>data.length==2)[1]!=undefined ? yearMonth.filter(data=>data.length==2)[1] : String(new Date().getDate()).padStart(2,'0');
-	let hours   = time[0]!=undefined ? time[0] : String(new Date().getHours()).padStart(2,'0');
-	let minutes = time[1]!=undefined ? time[1] : String(new Date().getMinutes()).padStart(2,'0');
-	let seconds = time[2]!=undefined ? time[2] : String(new Date().getSeconds()).padStart(2,'0');
-	
-	// 연,월,일,시,분,초가 다 있는경우 이렇게 하려고 했었으나....
-    //let pureNumber = value.replace(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]/gi,"");
-    let pureNumber = year+month+date+hours+minutes+seconds;
-	value = pureNumber.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1-$2-$3 $4:$5:$6');
+		let time = splitDate[1]!= undefined ? splitDate[1].split(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]/gi) : '';
+		hours   = time[0]!=undefined ? time[0] : String(new Date().getHours()).padStart(2,'0');
+		minutes = time[1]!=undefined ? time[1] : String(new Date().getMinutes()).padStart(2,'0');
+		seconds = time[2]!=undefined ? time[2] : String(new Date().getSeconds()).padStart(2,'0');	
+		
+		
+		// 연,월,일,시,분,초가 다 있는경우 이렇게 하려고 했었으나....
+	    let pureNumber = year+month+date+hours+minutes+seconds;
+		value = pureNumber.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1-$2-$3 $4:$5:$6');
 	
 	}
+	
 	return value;
 }
 
@@ -347,6 +379,13 @@ function isValidType(mandatory,type,value){
 	
 }
 
+ // 검색결과 목록의 자식 Element를 제거하는 함수입니다
+function removeAllChildNods(el) {   
+    while (el.hasChildNodes()) {
+        el.removeChild (el.lastChild);
+    }
+}
+
 function dataSave(){
 	
 	let token = $("meta[name='_csrf']").attr("content");
@@ -384,27 +423,6 @@ function dataSave(){
 			}
 		}
 		
-		/*
-		// 각 row에 있는 데이터들을 object로 만드는 과정
-		Array.prototype.forEach.call(td,(item,index)=>{
-				// 설정한 타엡이 맞을때만 통과
-				if(isValidType(dataType[index],item.innerText)){
-					if(dataType[index]=='Int' || dataType[index]=='Double'){
-						var number = parseInt(item.innerText.replace(/[^\d.-]/g, ''));
-						if(!isNaN(number)){
-							dataObj[colName[index]] = parseInt(item.innerText.replace(/[^\d.-]/g, ''));	
-						}{
-							alert("숫자 형식이 아닌 값이 들어왔습니다.");
-						}
-					}else{
-						dataObj[colName[index]] = item.innerText;	
-					}
-				}else{
-					alter(`${item.innerText}는 ${dataType[index]}타입이 아닙니다.`);
-					return;
-				}
-		});
-		*/
 		// 만들어진 object를 Array로 만드는 과정.
 		dataArr.push(dataObj);
 	}

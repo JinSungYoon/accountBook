@@ -1,4 +1,4 @@
-package core.common;
+package core.common.dto;
 
 import lombok.Data;
 

@@ -11,10 +11,12 @@
 			<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 			
 	        <!-- DataTable -->
-	        <!-- link th:href="@{/vendor/datatables/dataTables.bootstrap4.css}" rel="stylesheet" -->
-	        <link rel="stylesheet" type="text/css"  th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+	        <link rel="stylesheet" type="text/css"  th:href="@{/webjars/bootstrap/4.6.0/css/bootstrap.min.css}">
 	        <!-- Fontawsome -->
-	        <link rel="stylesheet" type="text/css"  th:href="@{/webjars/font-awesome/css/font-awesome.min.css}" />
+			<link rel="stylesheet" type="text/css"  th:href="@{/webjars/font-awesome/4.7.0/css/font-awesome.css}" />
+	        <link rel="stylesheet" type="text/css"  th:href="@{/webjars/font-awesome/4.7.0/css/font-awesome.min.css}" />
+	        <link rel="stylesheet" type="text/css"  th:href="@{/webjars/font-awesome/4.7.0/css/font-awesome.min-jsf.css}" />
+	        <link rel="stylesheet" type="text/css"  th:href="@{/webjars/font-awesome/4.7.0/css/font-awesome-jsf.css}" />
 	        <!-- Custom css -->
     		<link th:href="@{/css/fragments/headerStyle.css}" rel="stylesheet"/>
     		<link th:href="@{/css/excel/locationMappingStyle.css}" rel="stylesheet"/>
@@ -22,8 +24,8 @@
 	    	</head>    
 	        <nav>
 	        	<ul class="nav-container">
-	        		<li class="nav-item"><a href="/main">메인</a>
-	        		<li class="nav-item"><a href="/accountBook">가계부 작성</a>
+	        		<li class="nav-item"><a href="/statistics/main">메인</a>
+	        		<li class="nav-item"><a href="/accountBook">거래내역</a>
 	        		<li class="nav-item"><a href="/locationMapping">장소 매핑</a>
 	        		<li class="nav-item dropdown">
 						<div class="dropdown">
@@ -37,7 +39,5 @@
 					</li>
 	        	</ul>
 	        </nav>
-			
-        
     </th:block>
 </html>

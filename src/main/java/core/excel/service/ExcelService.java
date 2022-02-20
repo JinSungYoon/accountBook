@@ -5,9 +5,11 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import core.common.dto.ConditionDto;
 import core.excel.dto.ComboDto;
 import core.excel.dto.ExcelData;
 import core.excel.dto.LocationDto;
+import core.statistics.dto.StatisticsCondDto;
 
 public interface ExcelService {
 	List<ExcelData> showExcelData(MultipartFile file)throws IOException;
@@ -15,6 +17,7 @@ public interface ExcelService {
 	List<LocationDto> returnMapInfo(String keyword,String browser)throws Exception;
 	List<LocationDto> searchStoreList(LocationDto data)throws Exception;
 	int getStoreListCnt(LocationDto data) throws Exception;
-	List<ComboDto> comboCategory()throws Exception;
+	List<ComboDto> comboCategory(ConditionDto cond)throws Exception;
 	List<LocationDto> updateLocation(LocationDto data) throws Exception;
+	List<ExcelData> searchTransactionHistory(ConditionDto cond) throws Exception;
 }

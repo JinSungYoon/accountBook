@@ -1,0 +1,110 @@
+<html 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<th:block th:replace="/fragments/header :: headFragment"></th:block>
+<meta charset="UTF-8">
+<title>지출 통계 화면</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <!-- c3.chart -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css"/>
+    <!-- Date picker css -->
+     <link th:href="@{/css/jquery-ui.css}" rel="stylesheet">
+    <!-- custom css -->
+    <link th:href="@{/css/statistics/dashboardStyle.css}" rel="stylesheet"/>
+</head>
+<body>
+	<div class="side_bar">
+		<ul>
+			<li>연별</li>
+			<li>반기별</li>
+			<li>분기별</li>
+			<li>월별</li>
+			<li>주별</li>
+		</ul>
+	</div>
+	<div class="caledar">Date <input type="text" id="monthpicker"></div>
+	<div class="conatiner">
+		<div>
+			<ul>
+				<li class="graph">
+					<section>
+						<div class="graph_title">결제 지역</div>
+						<div id="map"></div>
+					</section>
+				</li>
+			</ul>
+		</div>
+		<div>
+			<ul>
+				<li class="graph">
+					<div class="partition">
+						<div class="graph_title">일별 누적 지출내역</div>
+						<div id="trend"></div>
+					</div>
+				</li>
+				<li class="graph">
+					<div class="partition">
+						<div class="graph_title">분류별 지출</div>
+						<div id="payCategory"></div>
+					</div>
+				</li>
+				<li class="graph">
+					<div class="partition">
+						<div class="graph_title">결제 빈도 카테고리</div>
+						<div id="countCategory"></div>
+					</section>
+				</li>
+				<li class="graph">
+					<div class="partition">
+						<div class="graph_title">일자별 지출 내역</div>
+						<div class="calendar_box">
+							<div class="ctr_box">
+								<span class="cal_month"></span>
+	        					<span class="cal_year"></span>
+        					</div>
+						    <table class="cal_table">
+						      <thead>
+						        <tr>
+						          <th>S</th>
+						          <th>M</th>
+						          <th>T</th>
+						          <th>W</th>
+						          <th>T</th>
+						          <th>F</th>
+						          <th>S</th>
+						        </tr>
+						      </thead>
+						      <tbody class="cal_body"></tbody>
+						    </table>
+					    </div>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!-- jQuery javascript -->
+	<!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script-->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+	<!-- Date picker -->
+	<!-- script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script -->
+	
+	<script th:src="@{/webjars/jquery-ui/jquery-ui.min.js}"/>"></script>
+	<!-- script th:src="@{/webjars/jquery-ui-monthpicker/1.0.1/jquery.ui.monthpicker.js}"></script -->
+	<script th:src="@{../js/jquery.mtz.monthpicker.js}"></script>
+	
+	<!-- C3 javascript -->
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
+	<!-- Kakao Map Api -->
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=674ad988aec29b3f66bedf5414153f76&libraries=clusterer"></script>
+	<!-- custom javascript -->
+	<script type="text/javascript" src="../js/fragments/header.js"></script>
+	<script type="text/javascript" src="../js/statistics/statisticsFunc.js"></script>
+</body>
+</html>

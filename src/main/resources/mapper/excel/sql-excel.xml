@@ -104,37 +104,22 @@
 		) store_list
 	</select>
 	
-	<select id="comboCategory" resultType="core.excel.dto.ComboDto">
-		<![CDATA[
+	<select id="comboCategory" parameterType = "core.common.dto.ConditionDto" resultType="core.excel.dto.ComboDto">
+		
 		select distinct store_category object_key1,store_category object_value1,store_category_detail object_key2,store_category_detail object_value2 
 		from card_usage_history
+		where 1=1
+		<if test="fromDate != null and toDate != null">
+		and payment_date between DATE_FORMAT(STR_TO_DATE(#{fromDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s') and DATE_FORMAT(STR_TO_DATE(#{toDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s')
+		</if>
 		order by store_category,store_category_detail
-		]]>
+		
 	</select>
 	<update id="updateLocation" parameterType = "core.excel.dto.LocationDto">
-		
 		update card_usage_history
 		set store_name = #{storeName}
-		<choose>
-			<when test="storeCategory != null and storeCategoryDetail != null">
-			,store_category =#{storeCategory}
-			,store_category_detail = #{storeCategoryDetail}
-			</when>
-			<when test="storeCategory == null or storeCategoryDetail == null">
-				<if test="storeCategory == null">
-				,store_category = #{storeCategoryDetail}
-				,store_category_detail = #{storeCategoryDetail}
-				</if>
-				<if test="storeCategoryDetail == null">
-				,store_category = #{storeCategory}
-				,store_category_detail = #{storeCategory}
-				</if>
-			</when>
-			<otherwise>
-			,store_category = IF(#{storeCategory}='','기타',#{storeCategory})
-			,store_category_detail = IF(#{storeCategoryDetail}='','기타',#{storeCategoryDetail})	
-			</otherwise>
-		</choose>
+		,store_category = IF(#{storeCategory}='',IF(#{storeCategoryDetail}='','기타',#{storeCategoryDetail}),#{storeCategory})
+		,store_category_detail = IF(#{storeCategoryDetail}='',IF(#{storeCategory}='','기타',#{storeCategory}),#{storeCategoryDetail})	
 		,address_name = #{addressName}
 		,road_address_name = #{roadAddressName}
 		,xcoordinate = #{xcoordinate}
@@ -145,5 +130,12 @@
 		
 	</update>
 	
+	<select id="searchTransactionHistory" parameterType="core.common.dto.ConditionDto" resultType="core.excel.dto.ExcelData" >
+		select *
+		from card_usage_history
+		where 1=1
+		and payment_date between DATE_FORMAT(STR_TO_DATE(#{fromDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s') and DATE_FORMAT(STR_TO_DATE(#{toDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s')
+		order by payment_date
+	</select>
 	
 </mapper>

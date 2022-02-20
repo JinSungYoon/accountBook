@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <!-- Font awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <link th:href="@{/css/excel/sarchLocationStyle.css}" rel="stylesheet"/>
 </head>
 <body>
 		<input id="rowIndex" class="rowIndex" type="hidden" name="rowIndex" th:value="${rowIndex}">
@@ -24,23 +26,23 @@
 		<button id="searchLocation" class="img-button">
 			<i class="fas fa-search"></i>
 		</button>
-		<div>
-		<table class="table table-striped">
-		    <thead>
-		    <tr>
-		      <th scope="col">#</th>
-		      <th scope="col">영업점이름</th>
-		      <th scope="col">업체분류</th>
-		      <th scope="col">업체세부분류</th>
-		      <th scope="col">주소</th>
-		      <th scope="col">도로명주소</th>
-		      <th scope="col">x좌표</th>
-		      <th scope="col">y좌표</th>
-		    </tr>
-		    </thead>
-		    <tbody id="locationBody">
-		    </tbody>
-		  </table>
+		<div id="storeTable">
+			<table class="table table-striped">
+			    <thead>
+			    <tr>
+			      <th scope="col">#</th>
+			      <th scope="col">영업점이름</th>
+			      <th scope="col">업체분류</th>
+			      <th scope="col">업체세부분류</th>
+			      <th scope="col">주소</th>
+			      <th scope="col">도로명주소</th>
+			      <th scope="col">x좌표</th>
+			      <th scope="col">y좌표</th>
+			    </tr>
+			    </thead>
+			    <tbody id="locationBody">
+			    </tbody>
+			</table>
 		</div>
 		<div>
 			<button id="returnLocation">선택</button>

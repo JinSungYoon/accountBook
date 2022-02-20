@@ -1,34 +1,21 @@
 let categoryCombo;
 
-$(document).ready(function(){
+window.onload = function(){
 	
-	comboCategory();
+	let objArray = [];
 	
-	function comboCategory(){
-		$.ajax({
-			type:'GET'
-			,url:'/comboCategory'
-			,contetType : 'application/json'
-			,success : function(result){
-			
-			categoryCombo = result;
-			
-			let category = Array.from(new Set(categoryCombo.map(data => data.objectKey1)));
-			let categoryDetail = Array.from(new Set(categoryCombo.filter(data=>data.objectKey1 == category[0]).map(data => data.objectKey2)));
-			
-			let categoryComboBox = document.getElementById("categoryCombo");
-			let categoryDetailComboBox = document.getElementById("categoryDetailCombo");
-			
-			// 옵션 추가
-			categoryComboBox = addOptions(categoryComboBox,category);
-			categoryDetailComboBox = addOptions(categoryDetailComboBox,categoryDetail);
-			
-			} 
-			,error : function(result){
-				console.log(result);
-			}
-		}) // End Ajax
+	for(let i=0; i<document.getElementById("categoryCombo").children.length;i++){
+		let comboObj ={};     
+		comboObj['objectKey1'] = document.getElementById("categoryCombo").children[i].text;
+	    comboObj['objectValue1'] = document.getElementById("categoryCombo").children[i].value;
+	    comboObj['objectKey2'] = document.getElementById("categoryDetailCombo").children[i].text;
+	    comboObj['objectValue2'] = document.getElementById("categoryDetailCombo").children[i].value;
+	    objArray.push(comboObj);  
 	}
+	
+	categoryCombo = objArray;
+	
+	setCombo(categoryCombo);
 	
 	function searchStoreList(keyword,category,categoryDetail){
 		
@@ -49,10 +36,16 @@ $(document).ready(function(){
 				removeAllChildNods($("#listBody")[0]);
 				// 새로 검색한 데이터 추가
 				result.list.forEach(item => addStoreRow(item));
-				
+				// 기존에 존재하는 page정보 제거
 				removeAllChildNods($(".pagination")[0]);
-				
+				// 검색된 정보로 페이지 설정
 				setPagination(result.page);
+				// combo필터 셋팅
+				setCombo(result.comboCategory);
+				//
+				$("#categoryCombo").val(category).prop("selected", true);
+				$("#categoryCombo").change();
+				$("#categoryDetailCombo").val(categoryDetail).prop("selected", true);
 				
 			} 
 			,error : function(result){
@@ -121,6 +114,20 @@ $(document).ready(function(){
 			ul[0].append(nLi);
 		}
 		
+	}
+	
+	function setCombo(data){
+		categoryCombo = data;
+			
+		let category = Array.from(new Set(categoryCombo.map(data => data.objectKey1)));
+		let categoryDetail = Array.from(new Set(categoryCombo.filter(data=>data.objectKey1 == category[0]).map(data => data.objectKey2)));
+		
+		let categoryComboBox = document.getElementById("categoryCombo");
+		let categoryDetailComboBox = document.getElementById("categoryDetailCombo");
+		
+		// 옵션 추가
+		categoryComboBox = addOptions(categoryComboBox,category);
+		categoryDetailComboBox = addOptions(categoryDetailComboBox,categoryDetail);
 	}
 	
 	// 동적으로 tRow에 click event를 추가
@@ -425,6 +432,8 @@ $(document).ready(function(){
 	            image: markerImage 
 	        });
 	
+		console.log(markerImage);
+	
 	    marker.setMap(map); // 지도 위에 마커를 표출합니다
 	    markers.push(marker);  // 배열에 생성된 마커를 추가합니다
 	
@@ -490,9 +499,9 @@ $(document).ready(function(){
 		
 		removeAllChildNods(comboBox);
 		
-		let option = document.createElement('option');
-		option.innerText = '';
-		comboBox.append(option);
+		let blankOption = document.createElement('option');
+		blankOption.innerText = '';
+		comboBox.append(blankOption);
 		
 		for(let combo of data){
 			option = document.createElement('option');
@@ -546,15 +555,11 @@ $(document).ready(function(){
 
 		var range = range - 1;
 
-		
-
 		var url = "${pageContext.request.contextPath}/board/getBoardList";
 
 		url = url + "?page=" + page;
 
 		url = url + "&range=" + range;
-
-		
 
 		location.href = url;
 
@@ -563,10 +568,17 @@ $(document).ready(function(){
 	//페이지 번호를 동적으로 생성할 때도 있어서 아래와 같이 이벤트 선언
 	$(document).on("click",'.page-link',function(e){
 		let a = $(this).closest('a');
+		let keyword = $("#storeKeyword")[0].value;
+		let category = $("#categoryCombo option:selected").val();
+		let categoryDetail = $("#categoryDetailCombo option:selected").val();
+		 
 		let page = a[0].innerText;
 		let range = 1;
 		let url = "/locationMapping";
-		url = url + "?page=" + page;
+		url = url + "?storeName=" + keyword;
+		url = url + "&storeCategory=" + category;
+		url = url + "&storeCategoryDetail=" + categoryDetail;
+		url = url + "&page=" + page;
 		url = url + "&range=" + range;
 		location.href = url;
 	});
@@ -588,4 +600,4 @@ $(document).ready(function(){
 
 	}
 	
-});
+};

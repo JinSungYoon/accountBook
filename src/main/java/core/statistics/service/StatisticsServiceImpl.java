@@ -1,11 +1,13 @@
 package core.statistics.service;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import core.statistics.dto.StatisticsCondDto;
+import core.excel.dto.ExcelData;
 import core.statistics.dto.AmountUsedDto;
 import core.statistics.dto.CategoryDto;
 import core.statistics.dto.PositionDto;
@@ -51,6 +53,23 @@ public class StatisticsServiceImpl implements StatisticsService {
 	public List<PositionDto> searchLocationCoordinate(StatisticsCondDto cond) throws Exception {
 		List<PositionDto> locationList = statisticsMapper.searchLocationCoordinate(cond);
 		return locationList;
+	}
+
+	@Override
+	public String getLastDateTimeOfMonth(String date) throws Exception {
+		
+		String year = date.substring(0,4);
+		
+		String month = date.substring(4,6);
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Integer.parseInt(year), Integer.parseInt(month)-1,1);
+		
+		String lastDay = year+month+Integer.toString(cal.getActualMaximum(Calendar.DAY_OF_MONTH)); 
+		
+		lastDay+="235959";
+		
+		return lastDay;
 	}
 	
 }
