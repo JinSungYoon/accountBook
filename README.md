@@ -15,7 +15,7 @@
 
 #### *개발환경
 
-![setting1](D:\Programming\Java\workspace\accountBook\README\setting1.png)
+![setting1](https://github.com/JinSungYoon/accountBook/blob/main/README/setting1.png)
 
 **JAVA version** : 1.8
 
@@ -68,7 +68,7 @@ testImplementation 'org.springframework.security:spring-security-test'
 
 AccountBookApplication에서 우클릭 후 Run As에서 Spring Boot App or Java Application을 선택하여 실행한다.
 
-![setting2](D:\Programming\Java\workspace\accountBook\README\setting2.png)
+![setting2](https://github.com/JinSungYoon/accountBook/blob/main/README/setting2.png)
 
 ### 화면설명
 
@@ -77,19 +77,21 @@ AccountBookApplication에서 우클릭 후 Run As에서 Spring Boot App or Java 
 - 로그인
 
 - 대쉬보드(메인)
-  ![dashboard](D:\Programming\Java\workspace\accountBook\README\dashboard.png)
+  ![dashboard](https://github.com/JinSungYoon/accountBook/blob/main/README/dashboard.png)
 
   월별 지출에 대하여, #결제지역, #일별 누적 지출내역, #분류별 지출, #결제빈도 카테고리, #일자별 지출내역을 확인할 수 있는 화면이다.
 
 - 가계부작성
-  ![transaction](D:\Programming\Java\workspace\accountBook\README\transaction.png)
+  ![transaction](https://github.com/JinSungYoon/accountBook/blob/main/README/transaction.png)
 
   실제 가계부를 작성하는 화면으로 직접 거래내역을 입력할 수 있으며, 엑셀 업로드를 통해 거래내역을 입력할 수 있다.
 
 - 장소매핑
-  ![locationMapping](D:\Programming\Java\workspace\accountBook\README\locationMapping.png)
+  ![locationMapping](https://github.com/JinSungYoon/accountBook/blob/main/README/locationMapping.png)
 
   방문한 장소의 분류와 위치를 매핑시키는 화면이다.
+  
+  
 
 ### 기능설명
 
