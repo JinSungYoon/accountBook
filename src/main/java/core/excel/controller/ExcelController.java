@@ -74,7 +74,6 @@ public class ExcelController {
 	@GetMapping("/searchMapInfo")
 	public List<LocationDto> returnMapInfo(@RequestParam("keyword") String keyword,@RequestParam("browser") String browser)throws Exception{
 		List<LocationDto> list = new ArrayList<>();
-		
 		list = excelService.returnMapInfo(keyword, browser);
 		System.out.println(list.toString());
 		return list;

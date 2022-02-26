@@ -18,81 +18,82 @@
 <title>장소 매핑</title>
 </head>
 <body>
-	<div class="search-container">
+	<div class="search_container">
         <div class="search">
             <input type="text" id="storeKeyword" placeholder="업체명을 입력하세요.">
             <button th:type="button" id="searchBtn">🔍︎</button>
         </div>
         <div class="combo">
-        <span>업체분류</span>
-		<select id="categoryCombo">
-			<option th:if="${#lists.size(comboCategory)} > 0" th:each="combo,i : ${comboCategory}" th:value="${combo.objectKey1}" 
-                th:utext="${combo.objectKey1}">
-        	</option>
-		</select>
-		<span>업체상세분류</span>
-		<select id="categoryDetailCombo">
-			<option th:if="${#lists.size(comboCategory)} > 0" th:each="combo,i : ${comboCategory}" th:value="${combo.objectKey2}" 
-                th:utext="${combo.objectKey2}">
-        	</option>
-		</select>
+	        <span>업체분류</span>
+			<select id="categoryCombo">
+				<option th:if="${#lists.size(comboCategory)} > 0" th:each="combo,i : ${comboCategory}" th:value="${combo.objectKey1}" 
+	                th:utext="${combo.objectKey1}">
+	        	</option>
+			</select>
+			<span>업체상세분류</span>
+			<select id="categoryDetailCombo">
+				<option th:if="${#lists.size(comboCategory)} > 0" th:each="combo,i : ${comboCategory}" th:value="${combo.objectKey2}" 
+	                th:utext="${combo.objectKey2}">
+	        	</option>
+			</select>
 		</div>
     </div>
-    <div></div>
-    <div class="contents">
-		<table id="storeList" class="table">
-	  		<thead id="listHeader" class="thead-dark">
-	  			<tr>
-		  			<th id="num"      					scope="col" class="align-middle">No.</th>
-		  			<th id="storeHeader"      			scope="col" class="align-middle">가맹점명</th>
-		  			<th id="storeCategoryHeader"		scope="col" class="align-middle">업체분류</th>
-		  			<th id="storeCategoryDetailHeader"	scope="col" class="align-middle">업체세부분류</th>
-		  			<th id="addressNameHeader"			scope="col"	class="align-middle" style="display:none">주소</th>
-		  			<th id="roadAddressNameHeader"		scope="col"	class="align-middle" style="display:none">도로명주소</th>
-		  			<th id="xcoordinateHeader"			scope="col"	class="align-middle" style="display:none">x좌표</th>
-		  			<th id="ycoordinateHeader"			scope="col"	class="align-middle" style="display:none">y좌표</th>
-	  			</tr>
-	  		</thead>
-	  		<tbody id="listBody" class="thead-light">
-	  			<tr th:if="${#lists.size(list)} > 0" th:each="list,i : ${list}" class="tRow">
-	        		<td><div class="dataContainer"><span id="sequence" class="storeName" th:text="${i.count}"></span></div></td>
-	        		<td><div class="dataContainer"><span id="storeName" class="storeName" th:text="${list.storeName}"></span></div></td>
-	        		<td><div class="dataContainer"><span id="storeCategory" class="storeCategory" th:text="${list.storeCategory}"></span></div></td>
-	        		<td><div class="dataContainer"><span id="storeCategoryDetail" class="storeCategoryDetail" th:text="${list.storeCategoryDetail}"></span></div></td>
-	        		<td hidden="hidden"><div class="dataContainer"><span id="addressName" class="addressName" th:text="${list.addressName}"></span></div></td>
-	        		<td hidden="hidden"><div class="dataContainer"><span id="xcoordinate" class="xcoordinate" th:text="${list.xcoordinate}"></span></div></td>
-	        		<td hidden="hidden"><div class="dataContainer"><span id="ycoordinate" class="ycoordinate" th:text="${list.ycoordinate}"></span></div></td>
-	        	</tr>
-	  		</tbody>
-	  	</table>
-	  	<!-- pagination{s} -->
-		<div id="paginationBox">
-			<ul class="pagination">
-				<li th:if="${pagination.prev}" class="page-item"><a class="page-link" href="#" onClick="fn_prev('${pagination.page}', '${pagination.range}', '${pagination.rangeSize}')">Previous</a></li>
-				<li data-th-each="i : ${#numbers.sequence(0,10)}" data-th-if="${i <= pagination.endPage}" data-th-classappend="${i == (pagination.page-1)} ? 'page-item active':'page-item'">
-				<a class="page-link" href="#" data-th-text="${1+i}">  </a>
-				</li>
-				<li th:if="${pagination.next}" class="page-item"><a class="page-link" href="#" onClick="fn_next('${pagination.range}','${pagination.range}', '${pagination.rangeSize}')" >Next</a></li>
-			</ul>
-		</div>
-		<!-- pagination{e} -->
-  	</div>
-  	<div class="map-area">
-  		<div class="map_wrap">
-		    <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
-		    <div id="menu_wrap" class="bg_white">
-		        <div class="option">
-		            <div>
-		                    키워드 : <input type="text" value="이태원 맛집" id="mapKeyword" size="15">
-		                    <input id="tRowIndex" hidden="hidden" value=-1></span> 
-		                    <button id="mapSearch">검색하기</button>
-		            </div>
-		        </div>
-		        <hr>
-		        <ul id="placesList"></ul>
-		        <div id="pagination"></div>
-		    </div>
-		</div>
+    <div class="main_container">
+    	<div class="contents">
+			<table id="storeList" class="table">
+		  		<thead id="listHeader" class="thead-dark">
+		  			<tr>
+			  			<th id="num"      					scope="col" class="align-middle">No.</th>
+			  			<th id="storeHeader"      			scope="col" class="align-middle">가맹점명</th>
+			  			<th id="storeCategoryHeader"		scope="col" class="align-middle">업체분류</th>
+			  			<th id="storeCategoryDetailHeader"	scope="col" class="align-middle">업체세부분류</th>
+			  			<th id="addressNameHeader"			scope="col"	class="align-middle" style="display:none">주소</th>
+			  			<th id="roadAddressNameHeader"		scope="col"	class="align-middle" style="display:none">도로명주소</th>
+			  			<th id="xcoordinateHeader"			scope="col"	class="align-middle" style="display:none">x좌표</th>
+			  			<th id="ycoordinateHeader"			scope="col"	class="align-middle" style="display:none">y좌표</th>
+		  			</tr>
+		  		</thead>
+		  		<tbody id="listBody" class="thead-light">
+		  			<tr th:if="${#lists.size(list)} > 0" th:each="list,i : ${list}" class="tRow">
+		        		<td><div class="dataContainer"><span id="sequence" class="storeName" th:text="${i.count}"></span></div></td>
+		        		<td><div class="dataContainer"><span id="storeName" class="storeName" th:text="${list.storeName}"></span></div></td>
+		        		<td><div class="dataContainer"><span id="storeCategory" class="storeCategory" th:text="${list.storeCategory}"></span></div></td>
+		        		<td><div class="dataContainer"><span id="storeCategoryDetail" class="storeCategoryDetail" th:text="${list.storeCategoryDetail}"></span></div></td>
+		        		<td hidden="hidden"><div class="dataContainer"><span id="addressName" class="addressName" th:text="${list.addressName}"></span></div></td>
+		        		<td hidden="hidden"><div class="dataContainer"><span id="xcoordinate" class="xcoordinate" th:text="${list.xcoordinate}"></span></div></td>
+		        		<td hidden="hidden"><div class="dataContainer"><span id="ycoordinate" class="ycoordinate" th:text="${list.ycoordinate}"></span></div></td>
+		        	</tr>
+		  		</tbody>
+		  	</table>
+		  	<!-- pagination{s} -->
+			<div id="paginationBox">
+				<ul class="pagination">
+					<li th:if="${pagination.prev}" class="page-item"><a class="page-link" href="#" onClick="fn_prev('${pagination.page}', '${pagination.range}', '${pagination.rangeSize}')">Previous</a></li>
+					<li data-th-each="i : ${#numbers.sequence(0,10)}" data-th-if="${i <= pagination.endPage}" data-th-classappend="${i == (pagination.page-1)} ? 'page-item active':'page-item'">
+					<a class="page-link" href="#" data-th-text="${1+i}">  </a>
+					</li>
+					<li th:if="${pagination.next}" class="page-item"><a class="page-link" href="#" onClick="fn_next('${pagination.range}','${pagination.range}', '${pagination.rangeSize}')" >Next</a></li>
+				</ul>
+			</div>
+			<!-- pagination{e} -->
+	  	</div>
+	  	<div class="map_area">
+	  		<div class="map_wrap">
+			    <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
+			    <div id="menu_wrap" class="bg_white">
+			        <div class="option">
+			            <div>
+			                    키워드 : <input type="text" value="" id="mapKeyword" size="15">
+			                    <input id="tRowIndex" hidden="hidden" value=-1></span> 
+			                    <button id="mapSearch">검색하기</button>
+			            </div>
+			        </div>
+			        <hr>
+			        <ul id="placesList"></ul>
+			        <div id="pagination"></div>
+			    </div>
+			</div>
+	  	</div>
   	</div>
   	
 <!-- jQuery javascript -->

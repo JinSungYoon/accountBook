@@ -13,4 +13,5 @@ public interface StatisticsService {
 	List<CategoryDto> searchCategoryStatistics(StatisticsCondDto cond) throws Exception;
 	List<PositionDto> searchLocationCoordinate(StatisticsCondDto cond) throws Exception;
 	String getLastDateTimeOfMonth(String date) throws Exception;
+	String getLastDateTimeOfWeek(String date) throws Exception;
 }

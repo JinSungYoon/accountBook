@@ -1,5 +1,12 @@
 @charset "UTF-8";
 
+.search_container{
+	float:right;
+	display : inline-block;
+	text-align : center;
+	padding : 10px;
+}
+
 .search{
 	float:left;
 }
@@ -7,6 +14,7 @@
 .combo{
 	float:left;
 }
+
 
 /* search :bar */
 .search input{
@@ -22,7 +30,19 @@ input::placeholder{
   font-size: 14px;
 }
 
+.search_container{
+	width : 100%;
+}
 
+.contents{
+	width : 35%;
+	float : left;
+}
+
+.map_area{
+	width : 65%;
+	float : left;
+}
 
 table.dataContainer{
 	position: relative;
@@ -30,22 +50,18 @@ table.dataContainer{
 
 .tRow{
 	background-color:#d3d3d3;
+	height : 65px;
 }
 
 .tRowSelected{
 	background-color:#666666;
-}
-
-.map_wrap {	
-	position:relative;
-	height:700px;
-	float:left;
+	height : 65px;
 }
 
 
 .map_wrap {	
 	position:relative;
-	width:83%;
+	width:100%;
 	height:700px;
 	float:left;
 }

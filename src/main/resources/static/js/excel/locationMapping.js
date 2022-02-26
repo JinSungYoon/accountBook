@@ -16,7 +16,7 @@ window.onload = function(){
 	categoryCombo = objArray;
 	
 	setCombo(categoryCombo);
-	
+		
 	function searchStoreList(keyword,category,categoryDetail){
 		
 		let object = {};

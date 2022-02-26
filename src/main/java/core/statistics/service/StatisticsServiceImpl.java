@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import core.statistics.dto.StatisticsCondDto;
 import core.excel.dto.ExcelData;
+import core.statistics.domain.repository.TransactionHistoryRepository;
 import core.statistics.dto.AmountUsedDto;
 import core.statistics.dto.CategoryDto;
 import core.statistics.dto.PositionDto;
@@ -18,6 +19,9 @@ public class StatisticsServiceImpl implements StatisticsService {
 
 	@Autowired
 	private StatisticsMapper statisticsMapper;
+	
+	@Autowired
+	private TransactionHistoryRepository transactionHistoryRepository;
 	
 	@Override
 	public List<AmountUsedDto> searchUsageAmountStatistics(StatisticsCondDto cond) throws Exception {
@@ -70,6 +74,20 @@ public class StatisticsServiceImpl implements StatisticsService {
 		lastDay+="235959";
 		
 		return lastDay;
+	}
+
+	@Override
+	public String getLastDateTimeOfWeek(String date) throws Exception {
+		String year = date.substring(0,4);
+		
+		String month = date.substring(4,6);
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Integer.parseInt(year), Integer.parseInt(month)-1,1);
+		
+		
+		
+		return null;
 	}
 	
 }

@@ -5,7 +5,7 @@ $(document).ready(function(){
     /* MonthPicker 옵션 */
 	options = {
 		pattern: 'yyyy-mm', // Default is 'mm/yyyy' and separator char is not mandatory
-		selectedYear: 2021,
+		selectedYear: 2022,
 		startYear: 2008,
 		finalYear: 2999,
 		openOnFocus : true,

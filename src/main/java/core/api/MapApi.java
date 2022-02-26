@@ -30,64 +30,6 @@ public class MapApi {
 	@Autowired
 	public StatisticsMapper mapper;
 	
-	public Map searchLocationInformation(String keyword)throws Exception{
-		
-		String encodeKeyword = "";  // 한글 주소는 encoding 해서 날려야 함
-		String apiKey = "6429d4bb07e8737943994b85d7c0d793";
-		try { 
-			encodeKeyword = URLEncoder.encode( keyword, "UTF-8" );
-			} 
-		catch ( 
-				UnsupportedEncodingException e ) { e.printStackTrace();
-				}
-		
-		String apiUrl = "https://dapi.kakao.com/v2/local/search/keyword.json?query="+ encodeKeyword;
-		String auth = "KakaoAK " + apiKey;
-		
-		URL url = new URL( apiUrl );
-	    HttpsURLConnection conn = ( HttpsURLConnection ) url.openConnection();
-		conn.setRequestMethod( "GET" );
-	    conn.setRequestProperty( "Authorization", auth );
-	    
-	    BufferedReader br;
-
-	    int responseCode = conn.getResponseCode();
-	    if( responseCode == 200 ) {  // 호출 OK
-	    	br = new BufferedReader( new InputStreamReader(conn.getInputStream(), "UTF-8") );
-	    } else {  // 에러
-	    	br = new BufferedReader( new InputStreamReader(conn.getErrorStream(), "UTF-8") );
-	    }
-	    
-	    String jsonString = new String();
-	    String stringLine;
-	    while ( ( stringLine= br.readLine()) != null ) {
-	        jsonString += stringLine;
-	    }
-	    
-	    JSONParser parser = new JSONParser();
-	    JSONObject jsonObj = (JSONObject)parser.parse(jsonString);
-	    JSONArray result = (JSONArray) jsonObj.get("documents");
-	    for(int idx=0;idx<result.size();idx++) {
-	    	StoreDto store = new StoreDto();
-	    	JSONObject item =  (JSONObject) result.get(idx);
-	    	String categoryName = (String) item.get("category_name");
-	    	store.setBusinessNumber((String) item.get("id"));
-	    	store.setStoreName((String) item.get("place_name"));
-	    	store.setStoreCategory((String) item.get("category_group_name"));
-	    	store.setStoreCategoryDetail(categoryName.substring(categoryName.lastIndexOf(" ")+1));
-	    	store.setAddressName((String) item.get("address_name"));
-	    	store.setRoadAddressName((String) item.get("road_address_name"));
-	    	store.setXLocation(Double.parseDouble((String)item.get("x")));
-	    	store.setYLocation(Double.parseDouble((String)item.get("y")));
-	    	mapper.insertStoreInformation(store); 
-	    }
-	    
-	    Map<String,Integer> map = new HashMap<String, Integer>();
-	    map.put(keyword, result.size());
-	    
-	    return map; 
-	}
-	
 	public List<LocationDto> searchNaverLocation(String keyword)throws Exception{
 		List<LocationDto> list = new ArrayList<>();
 		

@@ -11,11 +11,25 @@ ul{
    list-style:none;
 }
 
+.side_nav_unorder_list{
+	width : 150px;
+	list-style:none;
+	margin : 0;
+	padding : 0;
+}
+
+.side_nav_list{
+	display : block;
+	padding : 8px;
+	text-decoration : none;
+	font-weight : bold;
+}
+
 .side_bar{
 	width:10%;
 	height:875px;
 	float:left;
-	background-color:#FFAA28;
+	background-color:#b7d5ac;
 	text-align:left;
 }
 
