@@ -75,6 +75,7 @@ AccountBookApplication에서 우클릭 후 Run As에서 Spring Boot App or Java 
 ---
 
 - 로그인
+  ![login](https://github.com/JinSungYoon/accountBook/blob/main/README/login.png)
 
 - 대쉬보드(메인)
   ![dashboard](https://github.com/JinSungYoon/accountBook/blob/main/README/dashboard.png)
@@ -97,7 +98,19 @@ AccountBookApplication에서 우클릭 후 Run As에서 Spring Boot App or Java 
 
 ---
 
-
+* 대쉬보드(메인)
+  * 결제지역 Display
+    * 적용 기술 : 카카오 마커 클러스터리
+    * 기술 설명 : 지역정보를 기반으로 군집화 하는 기설입니다.
+  * 실시간 데이터 전송
+    * 적용 기술 : Server Sent Event(SSE)
+    * 기술 설명 : 서보에서 실시간으로 Client단으로 Streaming 하는 기술입니다.
+* 가계부작성
+  * 엑셀 업로드
+* 장소매핑
+  * 지역매핑
+    * 적용기술 : 카카오지도
+    * 기술설명 : 가맹점명을 넘겨 위치 정보를 지도에 보여주는 기능입니다.
 
 ### Contributing
 

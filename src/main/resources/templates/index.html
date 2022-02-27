@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>로그인</title>
     <!-- custom css -->
-    <link th:href="@{/css/user/suerStyle.css}" rel="stylesheet"/>
+    <link th:href="@{/css/user/userStyle.css}" rel="stylesheet"/>
 </head>
 <body>
 	<div class="main_container">
@@ -13,18 +13,33 @@
 	    	<h1>가계부 어플</h1>
 	    </header>
 	    <hr>
-	    <section class="login_inpu_section">
+	    <section class="login_input_section">
 		    <form action="/user/login" method="post">
 				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-				<input type="text" id="email" name="email" placholder="이메일을 입력해 주세요">
-				<input type="password" id="password" name="password" placeholder="비밀번호">
-				<button type="submit">로그인</button>
+				<div class="login-id-wrap">	
+					<input type="text" id="email" class="email" name="email" placeholder="이메일">	
+				</div>
+				<div class="login_password_wrap">	
+					<input type="password" id="password" class="password" name="password" placeholder="비밀번호">	
+				</div>
+				<div class="login_sign_in_wrap">
+					<button id="loginBtn" class="btn" name="loginBtn" type="submit">로그인</button>
+					<!-- input type="submit" id="loginBtn" class="login_btn" name="loginBtn" value="로그인" -->	
+				</div>
 			</form>
-		    <a sec:authorize="isAnonymous()" th:href="@{/user/login}">로그인</a>
-		    <a sec:authorize="isAuthenticated()" th:href="@{/user/logout}">로그아웃</a>
-		    <a sec:authorize="isAnonymous()" th:href="@{/signup}">회원가입</a>
-		    <a sec:authorize="hasRole('ROLE_MEMBER')" th:href="@{/user/info}">내정보</a>
-		    <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin}">어드민</a>
+		    <!-- a sec:authorize="isAnonymous()" th:href="@{/user/login}">로그인</a -->
+		    <div class="btn" sec:authorize="isAuthenticated()">
+		    	<a sec:authorize="isAuthenticated()" th:href="@{/user/logout}">로그아웃</a>
+		    </div>
+		    <div class="btn" sec:authorize="isAnonymous()">
+		    	<a sec:authorize="isAnonymous()" th:href="@{/signup}">회원가입</a>
+		    </div>
+		    <div class="btn" sec:authorize="hasRole('ROLE_MEMBER')">
+		    	<a sec:authorize="hasRole('ROLE_MEMBER')" th:href="@{/user/info}">내정보</a>
+		    </div>
+		    <div class="btn" sec:authorize="hasRole('ROLE_ADMIN')">
+		    	<a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin}">어드민</a>
+		    </div>
 	    </section>
     </div>
 </body>
