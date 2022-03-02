@@ -15,6 +15,7 @@
 		select daily.daily_usage
 		,(ifnull(s.sum_amount,0)+daily.amount) sum_date_amount
 		,sum(ifNULL(sum_amount,0)+daily.amount) over(order by daily.daily_usage) as accumulated_date_amount
+		,0 average_daily_usage
 		from daily
 		left outer join 
 		(
@@ -47,6 +48,8 @@
 			group by date_format(payment_date,'%d')
 			)
 			select daily.daily_usage
+			, 0 sum_date_amount
+			, 0 accumulated_date_amount
 			,round(sum(ifnull(a.usage_amount,0)+daily.amount) over(order by daily.daily_usage)/(select count(distinct date_format(payment_date,'%Y-%m')) from card_usage_history where payment_date < DATE_FORMAT(STR_TO_DATE(#{toDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s')),0) average_daily_usage
 			from daily
 			left outer join avgAmount a

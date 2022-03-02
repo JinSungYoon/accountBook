@@ -9,4 +9,11 @@ public class AmountUsedDto {
 	private Long accumulatedDateAmount;
 	private Long averageDailyUsage;
 	
+	public AmountUsedDto(String dailyUsage,Long sumDateAmount,Long accumulatedDateAmount,Long averageDailyUsage) {
+		this.dailyUsage = dailyUsage;
+		this.sumDateAmount = sumDateAmount;
+		this.accumulatedDateAmount = accumulatedDateAmount;
+		this.averageDailyUsage = averageDailyUsage;
+	}
+	
 }

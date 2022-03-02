@@ -81,7 +81,7 @@ $(document).ready(function(){
 		graph2.push('월 평균 일 사용금액');
 		
 		Array.prototype.forEach.call(data.usageAmountList,(item,index)=>{
-			axis.push(item.dateOfUse);
+			axis.push(item.dailyUsage);
 			graph1.push(item.accumulatedDateAmount);
 			graph2.push(item.averageDailyUsage);
 		});
@@ -90,7 +90,8 @@ $(document).ready(function(){
 			bindto : "#trend",
 			axis:{
 				x:{
-					axis
+					type : 'category',
+					categories : axis
 				}
 			},
 			data : {
