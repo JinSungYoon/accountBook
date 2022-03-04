@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
@@ -56,9 +57,9 @@ public class StatisticsServiceImpl implements StatisticsService {
 		int Hour = Integer.parseInt(fromDate.substring(8, 10));
 		int Minute = Integer.parseInt(fromDate.substring(10, 12));
 		int Second = Integer.parseInt(fromDate.substring(12, 14));
-		
 		// 시작 날짜와 생성
 		LocalDateTime startDatetime = LocalDateTime.of(Year,Month,Day,Hour,Minute,Second);
+		
 		Year = Integer.parseInt(toDate.substring(0, 4));
 		Month = Integer.parseInt(toDate.substring(4, 6));
 		Day = Integer.parseInt(toDate.substring(6, 8));
@@ -74,8 +75,6 @@ public class StatisticsServiceImpl implements StatisticsService {
 		ConcurrentMap<Object, Long> oneMonthSum = oneMonth.stream().collect(Collectors.groupingByConcurrent(s->s.getPaymentDate().getDayOfMonth(),Collectors.summingLong(TransactionHistoryEntity::getAmountOfPayment)));
 		// 조회 일자의 마지막 날을 임시 저장
 		int lastDayOfMonth =  endDatetime.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
-		
-		System.out.println("Last date of Month : "+lastDayOfMonth);
 		
 		// 현재 월 이전의 데이터 조회
 		endDatetime = endDatetime.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
@@ -145,14 +144,85 @@ public class StatisticsServiceImpl implements StatisticsService {
 	@Override
 	public List<CategoryDto> searchCategoryStatistics(StatisticsCondDto cond) throws Exception {
 		
-		List<CategoryDto> categoryList = statisticsMapper.searchStoreCategory(cond);
+		//List<CategoryDto> categoryList = statisticsMapper.searchStoreCategory(cond);
+		
+		// JPA를 통한 통계자료 조회
+		String fromDate = cond.getFromDate();
+		String toDate = cond.getToDate();
+		
+		int Year = Integer.parseInt(fromDate.substring(0, 4));
+		int Month = Integer.parseInt(fromDate.substring(4, 6));
+		int Day = Integer.parseInt(fromDate.substring(6, 8));
+		int Hour = Integer.parseInt(fromDate.substring(8, 10));
+		int Minute = Integer.parseInt(fromDate.substring(10, 12));
+		int Second = Integer.parseInt(fromDate.substring(12, 14));
+		// 시작 날짜와 생성
+		LocalDateTime startDatetime = LocalDateTime.of(Year,Month,Day,Hour,Minute,Second);
+		
+		Year = Integer.parseInt(toDate.substring(0, 4));
+		Month = Integer.parseInt(toDate.substring(4, 6));
+		Day = Integer.parseInt(toDate.substring(6, 8));
+		Hour = Integer.parseInt(toDate.substring(8, 10));
+		Minute = Integer.parseInt(toDate.substring(10, 12));
+		Second = Integer.parseInt(toDate.substring(12, 14));
+		// 끝 날짜와 생성
+		LocalDateTime endDatetime = LocalDateTime.of(Year,Month,Day,Hour,Minute,Second);
+		// JPA로 한달 결제 데이터 조회
+		List<TransactionHistoryEntity> oneMonth =	thr.findByPaymentDateBetween(startDatetime, endDatetime);
+		// 카테고리별 합계금액 산출
+		Map<Object, Long> categorySumAmount = oneMonth.stream().sorted((d1,d2)->d1.getStoreCategory().compareTo(d2.getStoreCategory())).collect(Collectors.groupingBy(s->s.getStoreCategory(),Collectors.summingLong(s->s.getAmountOfPayment())));
+		// 카테고리별 결제 횟수 산출
+		Map<Object, Long> categoryCount = oneMonth.stream().sorted((d1,d2)->d1.getStoreCategory().compareTo(d2.getStoreCategory())).collect(Collectors.groupingBy(s->s.getStoreCategory(),Collectors.counting()));
+		
+		List<CategoryDto> list = new ArrayList<CategoryDto>();
+		
+		for(Object item : categorySumAmount.keySet()) {
+			CategoryDto c = new CategoryDto(String.valueOf(startDatetime.getMonth()),item.toString(),categoryCount.get(item).intValue(),categorySumAmount.get(item));
+			list.add(c);			
+		}
+		// 카테고리별 결제데이터 내림차순, 결제횟수 내림차순
+		List<CategoryDto> categoryList = list.stream()
+				.sorted(Comparator.comparing(CategoryDto::getSumOfPayment,Comparator.reverseOrder()).thenComparing(CategoryDto::getCount,Comparator.reverseOrder()))
+				.collect(Collectors.toList());
 		
 		return categoryList;
 	}
 
 	@Override
 	public List<PositionDto> searchLocationCoordinate(StatisticsCondDto cond) throws Exception {
-		List<PositionDto> locationList = statisticsMapper.searchLocationCoordinate(cond);
+		//List<PositionDto> locationList = statisticsMapper.searchLocationCoordinate(cond);
+		
+		// JPA를 통한 통계자료 조회
+		String fromDate = cond.getFromDate();
+		String toDate = cond.getToDate();
+		
+		int Year = Integer.parseInt(fromDate.substring(0, 4));
+		int Month = Integer.parseInt(fromDate.substring(4, 6));
+		int Day = Integer.parseInt(fromDate.substring(6, 8));
+		int Hour = Integer.parseInt(fromDate.substring(8, 10));
+		int Minute = Integer.parseInt(fromDate.substring(10, 12));
+		int Second = Integer.parseInt(fromDate.substring(12, 14));
+		// 시작 날짜와 생성
+		LocalDateTime startDatetime = LocalDateTime.of(Year,Month,Day,Hour,Minute,Second);
+		
+		Year = Integer.parseInt(toDate.substring(0, 4));
+		Month = Integer.parseInt(toDate.substring(4, 6));
+		Day = Integer.parseInt(toDate.substring(6, 8));
+		Hour = Integer.parseInt(toDate.substring(8, 10));
+		Minute = Integer.parseInt(toDate.substring(10, 12));
+		Second = Integer.parseInt(toDate.substring(12, 14));
+		// 끝 날짜와 생성
+		LocalDateTime endDatetime = LocalDateTime.of(Year,Month,Day,Hour,Minute,Second);
+		
+		List<TransactionHistoryEntity> oneMonth =	thr.findByPaymentDateBetween(startDatetime, endDatetime);
+		// Position 데이터 추출
+		List<PositionDto> locationList = oneMonth.stream().map(data -> {
+							PositionDto p = new PositionDto(data.getStoreName(),data.getXcoordinate(),data.getYcoordinate());
+							return p;
+							})
+						.distinct()
+						.collect(Collectors.toList());
+		
 		return locationList;
 	}
 

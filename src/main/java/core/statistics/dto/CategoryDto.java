@@ -8,4 +8,11 @@ public class CategoryDto {
 	private String storeCategory;
 	private Integer count;
 	private Long sumOfPayment;
+	
+	public CategoryDto(String month,String storeCategory, Integer count,Long sumOfPayment) {
+		this.month = month;
+		this.storeCategory = storeCategory;
+		this.count = count;
+		this.sumOfPayment = sumOfPayment;
+	}
 }

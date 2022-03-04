@@ -6,7 +6,13 @@ import lombok.Data;
 public class PositionDto {
 
 	private String storeName;
-	private Double lat;
 	private Double lng;
+	private Double lat;
+	
+	public PositionDto(String storeName,Double lng,Double lat) {
+		this.storeName = storeName;
+		this.lng		= lng;
+		this.lat		= lat;
+	}
 	
 }

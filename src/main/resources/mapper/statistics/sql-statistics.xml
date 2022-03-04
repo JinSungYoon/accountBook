@@ -73,6 +73,7 @@
 		select store_name,ycoordinate as lat, xcoordinate as lng 
 		from card_usage_history
 		where payment_date between DATE_FORMAT(STR_TO_DATE(#{fromDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s') and DATE_FORMAT(STR_TO_DATE(#{toDate}, '%Y%m%d%H%i%s'),'%Y-%m-%d %H:%i:%s')
+		group by store_name
 	</select>
 	
 	<select id="searchTransactionHistory" parameterType="core.statistics.dto.StatisticsCondDto" resultType="core.excel.dto.ExcelData" >
