@@ -28,8 +28,8 @@ $(document).ready(function(){
 		
 	//-----------------------------------------------------------------------
 	
-	var now = new Date();
-	var year,month,firstDate,fromDt;
+	let now = new Date();
+	let year,month,firstDate,fromDt;
 	
 	firstDate = new Date(now.getFullYear(),now.getMonth(),1);
 	year = firstDate.getFullYear();
@@ -45,7 +45,7 @@ $(document).ready(function(){
 	
 	function callMonthUsageGraph(fromDt){
 		
-		var dataObj = new Object();
+		let dataObj = new Object();
 		dataObj.fromDate = fromDt;
 					
 		$.ajax({
@@ -176,13 +176,13 @@ $(document).ready(function(){
 		    return obj;
 		} );
 		
-		var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+		let mapContainer = document.getElementById('map'), // 지도를 표시할 div 
 		    mapOption = { 
 		        center: new kakao.maps.LatLng(37.5128, 127.0022), // 지도의 중심좌표
 		        level : 9 // 지도의 확대 레벨
 		    };
 		
-		var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다	
+		let map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다	
 				    
 	    let clusterer = new kakao.maps.MarkerClusterer({
 	        map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체 

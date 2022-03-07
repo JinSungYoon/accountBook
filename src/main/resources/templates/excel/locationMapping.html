@@ -9,12 +9,8 @@
   	<th:block th:replace="/fragments/header :: headFragment"></th:block>
     <meta charset="UTF-8">
     
-    <!-- csrf정보를 담기위한 meta -->
-	<meta name="_csrf" th:content="${_csrf.token}"/>
-	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-
 <head>
-<meta charset="EUC-KR">
+<meta charset="UTF-8">
 <title>장소 매핑</title>
 </head>
 <body>
@@ -68,11 +64,11 @@
 		  	<!-- pagination{s} -->
 			<div id="paginationBox">
 				<ul class="pagination">
-					<li th:if="${pagination.prev}" class="page-item"><a class="page-link" href="#" onClick="fn_prev('${pagination.page}', '${pagination.range}', '${pagination.rangeSize}')">Previous</a></li>
-					<li data-th-each="i : ${#numbers.sequence(0,10)}" data-th-if="${i <= pagination.endPage}" data-th-classappend="${i == (pagination.page-1)} ? 'page-item active':'page-item'">
-					<a class="page-link" href="#" data-th-text="${1+i}">  </a>
+					<li th:if="${pagination.prev}" class="page-prev"><a class="page-link" href="#">Previous</a></li>
+					<li data-th-each="i : ${#numbers.sequence(pagination.startPage,pagination.endPage)}" data-th-if="${i <= pagination.pageCnt}" data-th-classappend="${i == (pagination.page)} ? 'page-item active':'page-item'">
+						<a class="page-link" href="#" data-th-text="${i}">  </a>
 					</li>
-					<li th:if="${pagination.next}" class="page-item"><a class="page-link" href="#" onClick="fn_next('${pagination.range}','${pagination.range}', '${pagination.rangeSize}')" >Next</a></li>
+					<li th:if="${pagination.next}" class="page-next"><a class="page-link" href="#">Next</a></li>
 				</ul>
 			</div>
 			<!-- pagination{e} -->

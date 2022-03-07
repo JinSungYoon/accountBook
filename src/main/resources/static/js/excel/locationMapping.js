@@ -2,20 +2,30 @@ let categoryCombo;
 
 window.onload = function(){
 	
-	let objArray = [];
+	setupSearchCondition();
 	
-	for(let i=0; i<document.getElementById("categoryCombo").children.length;i++){
-		let comboObj ={};     
-		comboObj['objectKey1'] = document.getElementById("categoryCombo").children[i].text;
-	    comboObj['objectValue1'] = document.getElementById("categoryCombo").children[i].value;
-	    comboObj['objectKey2'] = document.getElementById("categoryDetailCombo").children[i].text;
-	    comboObj['objectValue2'] = document.getElementById("categoryDetailCombo").children[i].value;
-	    objArray.push(comboObj);  
+	function setupSearchCondition(){
+		// Combobox 셋팅
+		let objArray = [];
+	
+		for(let i=0; i<document.getElementById("categoryCombo").children.length;i++){
+			let comboObj ={};     
+			comboObj['objectKey1'] = document.getElementById("categoryCombo").children[i].text;
+		    comboObj['objectValue1'] = document.getElementById("categoryCombo").children[i].value;
+		    comboObj['objectKey2'] = document.getElementById("categoryDetailCombo").children[i].text;
+		    comboObj['objectValue2'] = document.getElementById("categoryDetailCombo").children[i].value;
+		    objArray.push(comboObj);  
+		}
+		
+		categoryCombo = objArray;
+		
+		setCombo(categoryCombo);
+		// 검색조건 다시 셋팅
+		$("#storeKeyword").val(getParameterByName('keyword'));
+		$("#categoryCombo").val(getParameterByName('storeCategory')).prop("selected", true);
+		$("#categoryCombo").change();
+		$("#categoryDetailCombo").val(getParameterByName('storeCategoryDetail')).prop("selected", true);
 	}
-	
-	categoryCombo = objArray;
-	
-	setCombo(categoryCombo);
 		
 	function searchStoreList(keyword,category,categoryDetail){
 		
@@ -42,7 +52,9 @@ window.onload = function(){
 				setPagination(result.page);
 				// combo필터 셋팅
 				setCombo(result.comboCategory);
-				//
+				
+				// 검색조건 다시 셋팅
+				$("#storeKeyword").val(keyword);
 				$("#categoryCombo").val(category).prop("selected", true);
 				$("#categoryCombo").change();
 				$("#categoryDetailCombo").val(categoryDetail).prop("selected", true);
@@ -86,8 +98,8 @@ window.onload = function(){
 			pLi.append(a);
 			ul[0].append(pLi);
 		}
-		
-		for(let idx=page.startPage; page.listCnt/page.pageCnt>page.endPage ? idx<=page.endPage+1 : idx<=page.endPage;idx++){
+		// 시작페이지부터 만일 전체 list의 갯수 나누기 page 갯수가 끝페이지보다 크면 끝 페이지까지 페이지 생성, 아니면 list갯수/page 갯수 올림 만큼 페이지생성
+		for(let idx=page.startPage; page.listCnt/page.pageCnt>page.endPage ? idx<=page.endPage : idx<= Math.ceil(page.listCnt/page.pageCnt);idx++){
 			let li = document.createElement('li');
 			let a =  document.createElement('a');
 			if(idx==page.page){
@@ -128,6 +140,8 @@ window.onload = function(){
 		// 옵션 추가
 		categoryComboBox = addOptions(categoryComboBox,category);
 		categoryDetailComboBox = addOptions(categoryDetailComboBox,categoryDetail);
+		
+		
 	}
 	
 	// 동적으로 tRow에 click event를 추가
@@ -151,7 +165,7 @@ window.onload = function(){
 	
 	$(document).on("click",".item",function(e){
 		
-		var itemElement = $(this).closest('li');
+		let itemElement = $(this).closest('li');
 		
 		let trIndex = parseInt(document.getElementById("tRowIndex").value)-1;
 		
@@ -277,27 +291,27 @@ window.onload = function(){
 	
 	
 	// 마커를 담을 배열입니다
-	var markers = [];
+	let markers = [];
 	
-	var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+	let mapContainer = document.getElementById('map'), // 지도를 표시할 div 
 	    mapOption = {
 	        center: new kakao.maps.LatLng(37.566826, 126.9786567), // 지도의 중심좌표
 	        level: 3 // 지도의 확대 레벨
 	    };  
 	
 	// 지도를 생성합니다    
-	var map = new kakao.maps.Map(mapContainer, mapOption); 
+	let map = new kakao.maps.Map(mapContainer, mapOption); 
 	
 	// 장소 검색 객체를 생성합니다
-	var ps = new kakao.maps.services.Places();  
+	let ps = new kakao.maps.services.Places();  
 	
 	// 검색 결과 목록이나 마커를 클릭했을 때 장소명을 표출할 인포윈도우를 생성합니다
-	var infowindow = new kakao.maps.InfoWindow({zIndex:1});
+	let infowindow = new kakao.maps.InfoWindow({zIndex:1});
 	
 	// 키워드 검색을 요청하는 함수입니다
 	function searchPlaces() {
 	
-	    var keyword = document.getElementById('mapKeyword').value;
+	    let keyword = document.getElementById('mapKeyword').value;
 	
 	    if (!keyword.replace(/^\s+|\s+$/g, '')) {
 	        alert('키워드를 입력해주세요!');
@@ -335,7 +349,7 @@ window.onload = function(){
 	// 검색 결과 목록과 마커를 표출하는 함수입니다
 	function displayPlaces(places) {
 	
-	    var listEl = document.getElementById('placesList'), 
+	    let listEl = document.getElementById('placesList'), 
 	    menuEl = document.getElementById('menu_wrap'),
 	    fragment = document.createDocumentFragment(), 
 	    bounds = new kakao.maps.LatLngBounds(), 
@@ -347,10 +361,10 @@ window.onload = function(){
 	    // 지도에 표시되고 있는 마커를 제거합니다
 	    removeMarker();
 	    
-	    for ( var i=0; i<places.length; i++ ) {
+	    for (let i=0; i<places.length; i++ ) {
 	
 	        // 마커를 생성하고 지도에 표시합니다
-	        var placePosition = new kakao.maps.LatLng(places[i].y, places[i].x),
+	        let placePosition = new kakao.maps.LatLng(places[i].y, places[i].x),
 	            marker = addMarker(placePosition, i), 
 	            itemEl = getListItem(i, places[i]); // 검색 결과 항목 Element를 생성합니다
 	
@@ -394,7 +408,7 @@ window.onload = function(){
 	// 검색결과 항목을 Element로 반환하는 함수입니다
 	function getListItem(index, places) {
 	
-	    var el = document.createElement('li'),
+	    let el = document.createElement('li'),
 	    itemStr = '<span class="markerbg marker_' + (index+1) + '"></span>' +
 	                '<div class="info">' +
 	                '   <h3 id="storeName">' + places.place_name + '</h3>';
@@ -419,7 +433,7 @@ window.onload = function(){
 	
 	// 마커를 생성하고 지도 위에 마커를 표시하는 함수입니다
 	function addMarker(position, idx, title) {
-	    var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
+	    let imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
 	        imageSize = new kakao.maps.Size(36, 37),  // 마커 이미지의 크기
 	        imgOptions =  {
 	            spriteSize : new kakao.maps.Size(36, 691), // 스프라이트 이미지의 크기
@@ -442,7 +456,7 @@ window.onload = function(){
 	
 	// 지도 위에 표시되고 있는 마커를 모두 제거합니다
 	function removeMarker() {
-	    for ( var i = 0; i < markers.length; i++ ) {
+	    for (let i = 0; i < markers.length; i++ ) {
 	        markers[i].setMap(null);
 	    }   
 	    markers = [];
@@ -450,7 +464,7 @@ window.onload = function(){
 	
 	// 검색결과 목록 하단에 페이지번호를 표시는 함수입니다
 	function displayPagination(pagination) {
-	    var paginationEl = document.getElementById('pagination'),
+	    let paginationEl = document.getElementById('pagination'),
 	        fragment = document.createDocumentFragment(),
 	        i; 
 	
@@ -460,7 +474,7 @@ window.onload = function(){
 	    }
 	
 	    for (i=1; i<=pagination.last; i++) {
-	        var el = document.createElement('a');
+	        let el = document.createElement('a');
 	        el.href = "#";
 	        el.innerHTML = i;
 	
@@ -482,7 +496,7 @@ window.onload = function(){
 	// 검색결과 목록 또는 마커를 클릭했을 때 호출되는 함수입니다
 	// 인포윈도우에 장소명을 표시합니다
 	function displayInfowindow(marker, title) {
-	    var content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
+	    let content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
 	
 	    infowindow.setContent(content);
 	    infowindow.open(map, marker);
@@ -549,20 +563,22 @@ window.onload = function(){
 	}
 	
 	//이전 버튼 이벤트
-	function fn_prev(page, range, rangeSize) {
+	function fn_prev(PAGE, RANGE, RANGESIZE) {
 
-		var page = ((range - 2) * rangeSize) + 1;
-
-		var range = range - 1;
-
-		var url = "${pageContext.request.contextPath}/board/getBoardList";
-
-		url = url + "?page=" + page;
-
+		let keyword = $("#storeKeyword")[0].value;
+		let category = $("#categoryCombo option:selected").val();
+		let categoryDetail = $("#categoryDetailCombo option:selected").val();
+		let page = ((parseInt(RANGE) - 1) * parseInt(RANGESIZE));
+		let range = parseInt(RANGE) - 1;
+		
+		let url = "/locationMapping";
+		url = url + "?storeName=" + keyword;
+		url = url + "&storeCategory=" + category;
+		url = url + "&storeCategoryDetail=" + categoryDetail;
+		url = url + "&page=" + page;
 		url = url + "&range=" + range;
-
+		url = url + "&rangeSize=" + RANGESIZE;
 		location.href = url;
-
 	}
 
 	//페이지 번호를 동적으로 생성할 때도 있어서 아래와 같이 이벤트 선언
@@ -571,33 +587,60 @@ window.onload = function(){
 		let keyword = $("#storeKeyword")[0].value;
 		let category = $("#categoryCombo option:selected").val();
 		let categoryDetail = $("#categoryDetailCombo option:selected").val();
-		 
+		
 		let page = a[0].innerText;
-		let range = 1;
+		let rangeSize = 10;
+		let startLink = $(".pagination")[0].children[0].children[0].innerHTML;
+		let range = isNaN(Number(startLink))?Math.floor(Number($(".pagination")[0].children[1].children[0].innerHTML)/rangeSize)+1:Math.floor(Number(startLink)/rangeSize)+1;
+		
+		
+		if(!isNaN(Number(page))){
+			let url = "/locationMapping";
+			url = url + "?storeName=" + keyword;
+			url = url + "&storeCategory=" + category;
+			url = url + "&storeCategoryDetail=" + categoryDetail;
+			url = url + "&page=" + page;
+			url = url + "&range=" + range;
+			url = url + "&rangeSize=" + rangeSize;
+			location.href = url;	
+		}else{
+			if(page=='Next'){
+				// 첫번째 링크가 숫자가 아닐경우 그 다음 link를 range로 설정 / 숫자일 경우 그 링크를 range로 설정
+				fn_next(page, range, rangeSize);
+			}else if(page=='Previous'){
+				// 첫번째 링크가 숫자가 아닐경우 그 다음 link를 range로 설정 / 숫자일 경우 그 링크를 range로 설정
+				fn_prev(page, range, rangeSize);
+			}
+		}
+		
+		
+	});
+
+	//다음 버튼 이벤트
+	function fn_next(PAGE, RANGE, RANGESIZE) {
+
+		let keyword = $("#storeKeyword")[0].value;
+		let category = $("#categoryCombo option:selected").val();
+		let categoryDetail = $("#categoryDetailCombo option:selected").val();
+
+		let page = (parseInt(RANGE) * parseInt(RANGESIZE)) + 1;
+		let range = parseInt(RANGE) + 1;
+	
 		let url = "/locationMapping";
 		url = url + "?storeName=" + keyword;
 		url = url + "&storeCategory=" + category;
 		url = url + "&storeCategoryDetail=" + categoryDetail;
 		url = url + "&page=" + page;
 		url = url + "&range=" + range;
+		url = url + "&rangeSize=" + RANGESIZE;
 		location.href = url;
-	});
-
-	//다음 버튼 이벤트
-	function fn_next(page, range, rangeSize) {
-
-		var page = parseInt((range * rangeSize)) + 1;
-
-		var range = parseInt(range) + 1;
-
-		var url = "${pageContext.request.contextPath}/board/getBoardList";
-
-		url = url + "?page=" + page;
-
-		url = url + "&range=" + range;
-
-		location.href = url;
-
+	}
+	
+	// url에서 원하는 값 가져오기
+	function getParameterByName(name) { 
+		name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+		var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"), results = regex.exec(location.search);
+		return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 	}
 	
 };

@@ -89,22 +89,35 @@ public class ExcelController {
 	
 	// 처음에 장소매핑 화면을 호출할때 사용하는 메서드
 	@GetMapping("/locationMapping")
-	public ModelAndView getLocationMapping(@RequestParam(required = false,value="storeName",defaultValue="") String storeName, @RequestParam(required = false,value="storeCategory",defaultValue="") String storeCategory,@RequestParam(required = false,value="storeCategoryDetail",defaultValue="") String storeCategoryDetail,@RequestParam(required=false,defaultValue="1") int page,@RequestParam(required=false,defaultValue="1") int range) throws Exception{
+	public ModelAndView getLocationMapping(@RequestParam(required = false,value="storeName",defaultValue="") String storeName, @RequestParam(required = false,value="storeCategory",defaultValue="") String storeCategory,@RequestParam(required = false,value="storeCategoryDetail",defaultValue="") String storeCategoryDetail,@RequestParam(required=false,defaultValue="1") int page,@RequestParam(required=false,defaultValue="1") int range,@RequestParam(required=false,defaultValue="10") int rangeSize) throws Exception{
 		ModelAndView mv = new ModelAndView("/excel/locationMapping");
 		Pagination pagination = new Pagination(); 
 		LocationDto data = new LocationDto();
 		ConditionDto cond = new ConditionDto();
+
+		if(!storeName.equals("")) {
+			data.setStoreName(storeName);
+		}
+		if(!storeCategory.equals("")) {
+			data.setStoreCategory(storeCategory);
+		}
+		if(!storeCategoryDetail.equals("")) {
+			data.setStoreCategoryDetail(storeCategoryDetail);
+		}
+		
 		// 조회할 List 갯수 확인
 		int listCnt = excelService.getStoreListCnt(data);
 		
-		data.setPage(page);
-		data.setRange(range);
 		pagination.setPage(page);
 		pagination.setRange(range);
+		pagination.setListCnt(listCnt);
+		pagination.setRangeSize(rangeSize);
 		
 		// 페이지 정보 셋팅
-		data.pageInfo(page, range, listCnt);
-		pagination.pageInfo(page, range, listCnt);
+		pagination.pageInfo(page, range, rangeSize, listCnt);
+		// List의 갯수를 정할 startList와 listSize만 정의
+		data.setStartList(pagination.getStartList()); 
+		data.setListSize(pagination.getListSize());
 		
 		List<LocationDto> list = excelService.searchStoreList(data);
 		List<ComboDto> comboCategory = excelService.comboCategory(cond);
@@ -119,7 +132,7 @@ public class ExcelController {
 	// 정보 검색 및 페이지 변경에 따른 검색 결과 반환 메서드
 	@ResponseBody
 	@GetMapping("/searchStoreList")
-	public storeContainer searchStoreList(@RequestParam(required = false,value="storeName",defaultValue="") String storeName, @RequestParam(required = false,value="storeCategory",defaultValue="") String storeCategory,@RequestParam(required = false,value="storeCategoryDetail",defaultValue="") String storeCategoryDetail,@RequestParam(required=false,defaultValue="1") int page,@RequestParam(required=false,defaultValue="1") int range)throws Exception{
+	public storeContainer searchStoreList(@RequestParam(required = false,value="storeName",defaultValue="") String storeName, @RequestParam(required = false,value="storeCategory",defaultValue="") String storeCategory,@RequestParam(required = false,value="storeCategoryDetail",defaultValue="") String storeCategoryDetail,@RequestParam(required=false,defaultValue="1") int page,@RequestParam(required=false,defaultValue="1") int range,@RequestParam(required=false,defaultValue="10") int rangeSize)throws Exception{
 		
 		storeContainer container = new storeContainer();
 		LocationDto data = new LocationDto();
@@ -140,12 +153,16 @@ public class ExcelController {
 		int listCnt = excelService.getStoreListCnt(data);
 		data.setPage(page);
 		data.setRange(range);
+		data.setRangeSize(rangeSize);
+		data.setListCnt(listCnt);
 		pagination.setPage(page);
 		pagination.setRange(range);
+		pagination.setListCnt(listCnt);
+		pagination.setRangeSize(rangeSize);
 		
 		// 페이지 정보 셋팅
-		data.pageInfo(page, range, listCnt);
-		pagination.pageInfo(page, range, listCnt);
+		data.pageInfo(page, range, rangeSize, listCnt);
+		pagination.pageInfo(page, range, rangeSize, listCnt);
 		
 		List<LocationDto> list = excelService.searchStoreList(data);
 		List<ComboDto> comboCategory = excelService.comboCategory(cond);

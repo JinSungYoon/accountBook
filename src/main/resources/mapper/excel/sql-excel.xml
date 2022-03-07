@@ -100,7 +100,6 @@
 		]]>
 		</if>
 		group by store_name,store_category,store_category_detail
-		order by store_name
 		) store_list
 	</select>
 	

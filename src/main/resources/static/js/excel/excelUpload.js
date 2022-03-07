@@ -26,7 +26,7 @@ $("#monthpicker").change(function(){
 });
 
 function callTransactionHistory(from,to){
-	var dataObj = new Object();
+	let dataObj = new Object();
 		dataObj.fromDate = fromDt;
 		dataObj.toDate = toDt;
 		
@@ -55,8 +55,8 @@ function callTransactionHistory(from,to){
 		});
 }
 
-var now = new Date();
-var year,month,firstDate,lastDate,fromDt,toDt;
+let now = new Date();
+let year,month,firstDate,lastDate,fromDt,toDt;
 
 firstDate = new Date(now.getFullYear(),now.getMonth(),1);
 lastDate = new Date(now.getFullYear(),now.getMonth()+1,0);
@@ -196,7 +196,7 @@ function addRow(index='',val='',data=''){
 // datetimepicker 적용
 $(document).on(('click','focus'), '#datetimepicker', function (event) {
    
-    var datetime_ele = $(event.target);
+    let datetime_ele = $(event.target);
     datetime_ele.datetimepicker({
         format: "YYYY-MM-DD HH:mm:ss"
     }).datetimepicker("show");
@@ -318,7 +318,7 @@ function copyExcelColumn(){
 }
 
 $('#checkAll').click(function(){
-	var checkAll = $('#checkAll').is(':checked');
+	let checkAll = $('#checkAll').is(':checked');
 	
 	if(checkAll){
 		$("input[name=checkboxName]").prop('checked',true);
@@ -351,13 +351,13 @@ $(document).on("click",".cancelBox",function(){
 
 // 동적으로 tr/td 생성시 아래와 같은 방법으로 이벤트 줘야 동작함
 $(document).on("click", "#searchBtn", function(){
-    var tr = $(this).closest('tr');
-	var td = tr.find('td:eq(2)').find('input');
-    var data = td.val();
+    let tr = $(this).closest('tr');
+	let td = tr.find('td:eq(2)').find('input');
+    let data = td.val();
     
     if(data!=""){
 		
-	    var childWin = window.open('searchLocation','searchLocation','width=1200,height=500,location=no,status=no,scrollbars=yes');
+	    let childWin = window.open('searchLocation','searchLocation','width=1200,height=500,location=no,status=no,scrollbars=yes');
 	    document.getElementById("keyword").value = data;
 	    document.getElementById("rowIndex").value = tr.index();
 		
@@ -369,7 +369,7 @@ $(document).on("click", "#searchBtn", function(){
 
 function isValidType(mandatory,type,value){
 	
-	var regex = RegExp(type);
+	let regex = RegExp(type);
 	
 	if(mandatory){
 		return regex.test(value);
