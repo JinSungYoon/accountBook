@@ -34,7 +34,7 @@ $(document).ready(function(){
 	firstDate = new Date(now.getFullYear(),now.getMonth(),1);
 	year = firstDate.getFullYear();
 	month = String(parseInt(firstDate.getMonth(),10)+1).padStart(2,'0');
-	fromDt = firstDate.getFullYear()+String(parseInt(firstDate.getMonth(),10)).padStart(2,'0')+String(firstDate.getDate()).padStart(2,'0')+"000000";
+	fromDt = firstDate.getFullYear()+month+String(firstDate.getDate()).padStart(2,'0')+"000000";
 	
 	
 	// 이번달 기본 셋팅
