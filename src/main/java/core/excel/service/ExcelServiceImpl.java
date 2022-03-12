@@ -118,8 +118,25 @@ public class ExcelServiceImpl implements ExcelService {
 	@Override
 	public int saveExcelData(List<ExcelData> data) throws Exception {
 		for(ExcelData item : data) {
-			if(item.getCancellation().equals("Y")) {
-				item.setAmountOfPayment(item.getAmountOfPayment()*-1); 
+			
+			if(item.getCancellation().isEmpty()) {
+				// 취소가 선택되어 있는데 거래금액 값이 0보다 클 경우 거래금액을 음수로 전환
+				if(item.getAmountOfPayment()>0L) {
+					item.setCancellation("N");
+				}
+				// 취소가 선택되지 않았는데 거래금액 값이 음수인 경우 취소값을 "Y"로 변경
+				else if(item.getAmountOfPayment()<0L) {
+					item.setCancellation("Y"); 
+				}
+			}else {
+				// 취소가 선택되어 있는데 거래금액 값이 0보다 클 경우 거래금액을 음수로 전환
+				if(item.getCancellation().equals("Y") && item.getAmountOfPayment()>0L) {
+					item.setAmountOfPayment(item.getAmountOfPayment()*-1); 
+				}
+				// 취소가 선택되지 않았는데 거래금액 값이 음수인 경우 취소값을 "Y"로 변경
+				else if(item.getCancellation().equals("N") && item.getAmountOfPayment()<0L) {
+					item.setCancellation("Y"); 
+				}
 			}
 			excelMapper.saveExcelData(item);
 		}

@@ -16,11 +16,11 @@ $(document).ready(function(){
 	$('#monthpicker').monthpicker(options);
 	
 	$("#monthpicker").change(function(){
-		year = $("#monthpicker").val().slice(0,4); 
-		month = $("#monthpicker").val().slice(-2);
+		year = parseInt($("#monthpicker").val().slice(0,4),10); 
+		month = parseInt($("#monthpicker").val().slice(-2),10);
 		firstDate = new Date(year,month,1);
 		
-		fromDt = firstDate.getFullYear()+String(parseInt(firstDate.getMonth(),10)).padStart(2,'0')+String(firstDate.getDate()).padStart(2,'0')+"000000";
+		fromDt = String(year)+String(month)+String(firstDate.getDate()).padStart(2,'0')+"000000";
 		
 		callMonthUsageGraph(fromDt);
 				

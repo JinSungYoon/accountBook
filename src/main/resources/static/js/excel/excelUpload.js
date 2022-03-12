@@ -160,6 +160,8 @@ function addRow(index='',val='',data=''){
 			
 			if(idx==2){	// 상호명입력 및 상호명에 대한 지리 데이터를 검색하기 위한 버튼
 				tbody += `<td id=${th[idx]["id"]}><div class="dataContainer"><input class="dataInput" type="text" value="${value}" pattern=${dataPattern[idx]} ${mandatory[idx]}><button th:type="button" id="searchBtn"><i class="fas fa-search"></i></button></div></td>`;
+			}else if(idx==3){	
+				tbody += `<td id=${th[idx]["id"]}><div class="dataContainer"><input class="costInput" type="text" value="${value}" pattern=${dataPattern[idx]} ${mandatory[idx]}></div></td>`;
 			}else if(idx==4){	
 				// datepicker 적용
 				//tbody += `<td id=${th[idx]["id"]}><input name="datepicker" type="text" value="${value}" style="position:relative width:100%; border: 0;"></td>`;
@@ -182,25 +184,26 @@ function addRow(index='',val='',data=''){
 	tbody += `</tr>`;
 	
 	$("#listBody").append(tbody);
-	/*
-	// datepicker 적용
-	$(document).find("input[name=datepicker]").removeClass('hasDatepicker').datepicker({
-		changeMonth: true, // 월을 바꿀수 있는 셀렉트 박스를 표시한다. 
-		changeYear : true,	// 년을 바꿀 수 있는 셀렉트 박스를 표시한다.
-		dateFormat : "yy-mm-dd",
+	
 		
-	});
-	*/	
 }
 
 // datetimepicker 적용
 $(document).on(('click','focus'), '#datetimepicker', function (event) {
-   
     let datetime_ele = $(event.target);
     datetime_ele.datetimepicker({
         format: "YYYY-MM-DD HH:mm:ss"
     }).datetimepicker("show");
     
+});
+
+// 거래금액에 음수값이 입력되었을 경우 취소여부를 자동으로 체크하는 로직
+$(document).on('change', '.costInput', function (event) {
+	if($(this)[0].value.includes('-')){
+		$("#listBody").children()[$(this).closest('tr').index()].children[8].children[0].children[0].click();
+	}else{
+		$("#listBody").children()[$(this).closest('tr').index()].children[8].children[0].children[0].click();
+	}
 });
 
 function changeDateFormat(input){
@@ -212,12 +215,9 @@ function changeDateFormat(input){
 	year = month = date = hours = minutes = seconds = '';
 	
 	if(value!=''){
-		
-		
 	
 		let splitDate = value.split(' ');
-		
-		
+				
 		let yearMonth = splitDate[0]!=undefined ? splitDate[0].split(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\s]/gi) : '';
 		year    = yearMonth.filter(data=>data.length>=4)[0]!=undefined ? yearMonth.filter(data=>data.length>=4)[0] : String(new Date().getFullYear());
 		month   = yearMonth.filter(data=>data.length==2)[0]!=undefined ? yearMonth.filter(data=>data.length==2)[0] : String(new Date().getMonth()+1).padStart(2,'0');
@@ -285,7 +285,7 @@ function addExcelColumn(){
 			}
 		}	
 	}else{
-		alert("복사하려면 복사할 엑셀 데이터 칼럼과 복사될 칼럼 데이터 칼럼을 선택해주세요");
+		alert("추가하려면 추가할 엑셀 데이터 칼럼과 추가될 칼럼 데이터 칼럼을 선택해주세요");
 	}	
 }
 
@@ -303,11 +303,13 @@ function copyExcelColumn(){
 				for(let idx=1;idx<=$("#excelBody").children().length;idx++){
 					if(bodySelectedIndex!=4){
 						$("#listBody").children()[$("#listBody").children().length-idx].children[bodySelectedIndex].children[0].children[0].value = $("#excelBody").children()[$("#excelBody").children().length-idx].children[excelSelectedIndex].innerText;
+						$("#listBody").children()[$("#listBody").children().length-idx].children[bodySelectedIndex].children[0].children.change;
 					}else{
 						$("#listBody").children()[$("#listBody").children().length-idx].children[bodySelectedIndex].children[0].children[0].value = changeDateFormat($("#excelBody").children()[$("#excelBody").children().length-idx].children[excelSelectedIndex].innerText);
+						$("#listBody").children()[$("#listBody").children().length-idx].children[bodySelectedIndex].children[0].children.change;
 					}
-					
-				}				
+				}
+						
 			}
 			
 		}	
@@ -345,8 +347,7 @@ $(document).on("click",".cancelBox",function(){
 	}else{
 		$(event.target).val('N');
 	}
-	
-	console.log($(event.target.value));
+
 });
 
 // 동적으로 tr/td 생성시 아래와 같은 방법으로 이벤트 줘야 동작함
