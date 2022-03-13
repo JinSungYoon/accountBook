@@ -184,7 +184,9 @@ function addRow(index='',val='',data=''){
 	tbody += `</tr>`;
 	
 	$("#listBody").append(tbody);
-	
+	if(index==3){
+		validCancelBox(val,$("#listBody").children().length-1);	
+	}
 		
 }
 
@@ -199,16 +201,22 @@ $(document).on(('click','focus'), '#datetimepicker', function (event) {
 
 // 거래금액에 음수값이 입력되었을 경우 취소여부를 자동으로 체크하는 로직
 $(document).on('change', '.costInput', function (event) {
-	if($(this)[0].value.includes('-')){
-		$("#listBody").children()[$(this).closest('tr').index()].children[8].children[0].children[0].click();
-	}else{
-		$("#listBody").children()[$(this).closest('tr').index()].children[8].children[0].children[0].click();
-	}
+	validCancelBox($(this)[0].value,$(this).closest('tr').index());
 });
+
+function validCancelBox(amount,rowIndex){
+	let checkBox = $("#listBody").children()[rowIndex].children[8].children[0].children[0];
+	// 음수값인데 취소값인데 취소버튼에 체크가 안 되어 있으면
+	if(amount.includes('-') && !checkBox.checked){
+		$("#listBody").children()[rowIndex].children[8].children[0].children[0].click();
+	}else if(!amount.includes('-') && checkBox.checked){
+	// 값이 양수인데 취소값이 Y이면 
+		$("#listBody").children()[rowIndex].children[8].children[0].children[0].click();
+	}
+}
 
 function changeDateFormat(input){
 	let value = input;
-	
 	let year,month,date,hours,minutes,seconds;
 	let cur = new Date();
 	
@@ -303,10 +311,13 @@ function copyExcelColumn(){
 				for(let idx=1;idx<=$("#excelBody").children().length;idx++){
 					if(bodySelectedIndex!=4){
 						$("#listBody").children()[$("#listBody").children().length-idx].children[bodySelectedIndex].children[0].children[0].value = $("#excelBody").children()[$("#excelBody").children().length-idx].children[excelSelectedIndex].innerText;
-						$("#listBody").children()[$("#listBody").children().length-idx].children[bodySelectedIndex].children[0].children.change;
+						if(bodySelectedIndex==3){
+							let amount = $("#excelBody").children()[$("#excelBody").children().length-idx].children[excelSelectedIndex].innerText;
+							let rowIndex = $("#listBody").children().length-idx;
+							validCancelBox(amount,rowIndex);
+						}
 					}else{
 						$("#listBody").children()[$("#listBody").children().length-idx].children[bodySelectedIndex].children[0].children[0].value = changeDateFormat($("#excelBody").children()[$("#excelBody").children().length-idx].children[excelSelectedIndex].innerText);
-						$("#listBody").children()[$("#listBody").children().length-idx].children[bodySelectedIndex].children[0].children.change;
 					}
 				}
 						
