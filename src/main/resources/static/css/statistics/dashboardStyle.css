@@ -11,6 +11,19 @@ ul{
    list-style:none;
 }
 
+a:link {
+  color : white;
+}
+a:visited {
+  color : white;
+}
+a:hover {
+  color : black;
+}
+a:active {
+  color : orange;
+}
+
 .side_nav_unorder_list{
 	width : 150px;
 	list-style:none;

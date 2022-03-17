@@ -31,30 +31,47 @@ public class StatisticsController {
 	private StatisticsService statisticsService;
 	
 	
-	@GetMapping("/statistics/main")
-	public ModelAndView showMain()throws Exception {
-		ModelAndView mv = new ModelAndView("/statistics/dashboard");
+	@GetMapping("/statistics/month")
+	public ModelAndView showMonthDashboard()throws Exception {
+		ModelAndView mv = new ModelAndView("/statistics/dashboardMonth");
+		return mv;
+	}
+	
+	@GetMapping("/statistics/year")
+	public ModelAndView showYearDashboard()throws Exception {
+		ModelAndView mv = new ModelAndView("/statistics/dashboardYear");
 		return mv;
 	}
 	
 	@GetMapping("/loadStatisticsGraph")
-	public StatisticsDto loadStatisticsGraph(@RequestParam("fromDate") String fromDate) throws Exception{
+	public StatisticsDto loadStatisticsGraph(@RequestParam("fromDate") String fromDate,@RequestParam("unit") String unit) throws Exception{
 		StatisticsDto container = new StatisticsDto();
 		List<AmountUsedDto> amountList = new ArrayList<>();
 		List<CategoryDto> categoryList = new ArrayList<>();
 		List<PositionDto> positionList = new ArrayList<>();
+		if(unit.equals("month")) {
+			String lastDate = statisticsService.getLastDateTimeOfMonth(fromDate);
+			
+			StatisticsCondDto cond = new StatisticsCondDto();
+			cond.setFromDate(fromDate);
+			cond.setToDate(lastDate);
+			amountList = statisticsService.searchUsageAmountStatistics(cond);
+			categoryList = statisticsService.searchCategoryStatistics(cond);
+			positionList = statisticsService.searchLocationCoordinate(cond);
+			container.setUsageAmountList(amountList);
+			container.setCategoryList(categoryList);
+			container.setPositionList(positionList);
+		}else if(unit.equals("year")) {
+			int div = Integer.valueOf(fromDate.substring(4,6))/12;
+			String changeDt = fromDate.substring(0,4)+String.valueOf((div*12)+12)+fromDate.substring(6);
+			String lastDate = statisticsService.getLastDateTimeOfMonth(changeDt);
+			StatisticsCondDto cond = new StatisticsCondDto();
+			cond.setFromDate(fromDate);
+			cond.setToDate(lastDate);
+			container = statisticsService.searchStatistics(cond);
+		}
 		
-		String lastDate = statisticsService.getLastDateTimeOfMonth(fromDate);
 		
-		StatisticsCondDto cond = new StatisticsCondDto();
-		cond.setFromDate(fromDate);
-		cond.setToDate(lastDate);
-		amountList = statisticsService.searchUsageAmountStatistics(cond);
-		categoryList = statisticsService.searchCategoryStatistics(cond);
-		positionList = statisticsService.searchLocationCoordinate(cond);
-		container.setUsageAmountList(amountList);
-		container.setCategoryList(categoryList);
-		container.setPositionList(positionList);
 		return container;
 	}
 	

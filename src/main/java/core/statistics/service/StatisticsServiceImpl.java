@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import core.statistics.dto.StatisticsCondDto;
+import core.statistics.dto.StatisticsDto;
 import core.statistics.domain.entity.TransactionHistoryEntity;
 import core.statistics.domain.repository.TransactionHistoryRepository;
 import core.statistics.dto.AmountUsedDto;
@@ -255,6 +258,117 @@ public class StatisticsServiceImpl implements StatisticsService {
 		
 		
 		return null;
+	}
+
+	@Override
+	public StatisticsDto searchStatistics(StatisticsCondDto cond) throws Exception {
+		StatisticsDto statistics = new StatisticsDto();
+		
+		// JPA를 통한 통계자료 조회
+		String fromDate = cond.getFromDate();
+		String toDate = cond.getToDate();
+		
+		int Year = Integer.parseInt(fromDate.substring(0, 4));
+		int Month = Integer.parseInt(fromDate.substring(4, 6));
+		int Day = Integer.parseInt(fromDate.substring(6, 8));
+		int Hour = Integer.parseInt(fromDate.substring(8, 10));
+		int Minute = Integer.parseInt(fromDate.substring(10, 12));
+		int Second = Integer.parseInt(fromDate.substring(12, 14));
+		// 시작 날짜와 생성
+		LocalDateTime startDatetime = LocalDateTime.of(Year,Month,Day,Hour,Minute,Second);
+		
+		Year = Integer.parseInt(toDate.substring(0, 4));
+		Month = Integer.parseInt(toDate.substring(4, 6));
+		Day = Integer.parseInt(toDate.substring(6, 8));
+		Hour = Integer.parseInt(toDate.substring(8, 10));
+		Minute = Integer.parseInt(toDate.substring(10, 12));
+		Second = Integer.parseInt(toDate.substring(12, 14));
+		// 끝 날짜와 생성
+		LocalDateTime endDatetime = LocalDateTime.of(Year,Month,Day,Hour,Minute,Second);
+		
+		// 시작 날짜와 종료 날짜를 선언
+		//LocalDateTime startDatetime = LocalDateTime.of(2021,03,01,00,00,00);
+		//LocalDateTime endDatetime = LocalDateTime.of(2022,02,28,23,59,59);
+		
+		// JPA를 통해 1년간 소비 데이터 조회
+		List<TransactionHistoryEntity> oneYear =	thr.findByPaymentDateBetween(startDatetime, endDatetime);
+		// 월별 지출금앱 합계 계산
+		Map<Object, Long> currentYearData = oneYear.stream().collect(Collectors.groupingByConcurrent(d->d.getPaymentDate().getMonthValue(),Collectors.summingLong(d->d.getAmountOfPayment())));
+		// JPA를 통해 과거 월별 지출금액 산출
+		List<TransactionHistoryEntity> pastYears =	thr.findByPaymentDateBefore(startDatetime);
+		// 과거 연도별 지출금액 산출
+		Map<Object, Long> pastYearData = pastYears.stream().collect(Collectors.groupingByConcurrent(d->d.getPaymentDate().getMonthValue(),Collectors.summingLong(d->d.getAmountOfPayment())));
+		// 과거 연도별 월 갯수 추출
+		List<String> pastYearCount = pastYears.stream().map(d->String.format("%04d",d.getPaymentDate().getYear())+String.format("%02d",d.getPaymentDate().getMonthValue())).distinct().sorted().collect(Collectors.toList());
+		
+		List<String> pastMonth = pastYearCount.stream().map(d->d.substring(4, d.length())).toList();
+		Map<String,Integer> pastMonthCount = new HashMap<String, Integer>();
+		for(int i=0;i<pastMonth.size();i++) {
+			pastMonthCount.put(pastMonth.get(i),Collections.frequency(pastMonth, pastMonth.get(i)));
+		}
+		
+		Map<String,Long> sumStoreCategory = oneYear.stream().collect(Collectors.groupingBy(d->d.getStoreCategory(),Collectors.summingLong(d->d.getAmountOfPayment())));
+		Map<String,Long> countStoreCategory = oneYear.stream().collect(Collectors.groupingBy(d->d.getStoreCategory(),Collectors.counting()));
+		
+		List<AmountUsedDto> amountList = new ArrayList<AmountUsedDto>();
+		List<PositionDto> positionList = new ArrayList<PositionDto>();
+		List<CategoryDto> categoryList = new ArrayList<CategoryDto>();
+		
+		System.out.println(pastMonthCount);
+		System.out.println(currentYearData);
+		System.out.println(pastYearData);
+		
+		for(int i=0;i<(endDatetime.getMonthValue() - startDatetime.getMonthValue())+1;i++) {
+			AmountUsedDto amountUsedDto = new AmountUsedDto(null, null, null, null);
+			// 12월인 경우 0으로 나오기 때문에 12로 매핑
+			if(((i+startDatetime.getMonthValue())%12)==0){
+				amountUsedDto.setDailyUsage(String.format("%02d",12));
+				if(currentYearData.get(12) == null) {
+					amountUsedDto.setSumDateAmount(0L);
+				}else {
+					amountUsedDto.setSumDateAmount(currentYearData.get(12));
+				}
+				if(pastMonthCount.get(String.format("%02d",12)) == null) {
+					amountUsedDto.setAverageDailyUsage(0L);
+				}else {
+					amountUsedDto.setAverageDailyUsage(pastYearData.get(12)/pastMonthCount.get(String.format("%02d",12)));
+				}
+			}else {
+				amountUsedDto.setDailyUsage(String.format("%02d",(i+startDatetime.getMonthValue())%12));
+				if(currentYearData.get((i+startDatetime.getMonthValue())%12) == null) {
+					amountUsedDto.setSumDateAmount(0L);
+				}else {
+					amountUsedDto.setSumDateAmount(currentYearData.get((i+startDatetime.getMonthValue())%12));
+				}
+				
+				if(pastMonthCount.get(String.format("%02d",(i+startDatetime.getMonthValue())%12)) == null) {
+					amountUsedDto.setAverageDailyUsage(0L);
+				}else {
+					amountUsedDto.setAverageDailyUsage(pastYearData.get((i+startDatetime.getMonthValue())%12)/pastMonthCount.get(String.format("%02d",(i+startDatetime.getMonthValue())%12)));
+				}
+			}
+			
+			amountList.add(amountUsedDto);
+		}
+		// 카테고리 정보를 카테고리 리스트에 추가한다.
+		for(Object data : sumStoreCategory.keySet()) {
+			CategoryDto item = new CategoryDto(String.valueOf(startDatetime.getYear()),data.toString(),countStoreCategory.get(data).intValue(),sumStoreCategory.get(data));
+			categoryList.add(item);
+		}
+		
+		positionList = oneYear.stream().map(data->{
+			PositionDto p = new PositionDto(data.getStoreName(),data.getXcoordinate(),data.getYcoordinate());
+			return p;
+					}).distinct()
+					  .collect(Collectors.toList());
+		
+		categoryList = categoryList.stream().sorted(Comparator.comparing(CategoryDto::getSumOfPayment,Comparator.reverseOrder()).thenComparing(CategoryDto::getCount,Comparator.reverseOrder())).collect(Collectors.toList());
+		
+		statistics.setUsageAmountList(amountList);
+		statistics.setPositionList(positionList);
+		statistics.setCategoryList(categoryList);
+		
+		return statistics;
 	}
 	
 }

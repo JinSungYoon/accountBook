@@ -19,14 +19,14 @@
 <body>
 	<div class="side_bar">
 		<ul class="side_nav_unorder_list">
-			<li class="side_nav_list">연별</li>
+			<li class="side_nav_list"><a href="/statistics/year">연별</a></li>
 			<li class="side_nav_list">반기별</li>
 			<li class="side_nav_list">분기별</li>
-			<li class="side_nav_list">월별</li>
+			<li class="side_nav_list"><a href="/statistics/month">월별</a></li>
 			<li class="side_nav_list">주별</li>
 		</ul>
 	</div>
-	<div class="caledar">Date <input type="text" id="monthpicker"></div>
+	<div class="caledar">Year <select id="yearpicker"></select></div>
 	<div class="conatiner">
 		<div>
 			<ul>
@@ -42,7 +42,7 @@
 			<ul>
 				<li class="graph">
 					<div class="partition">
-						<div class="graph_title">일별 누적 지출내역</div>
+						<div class="graph_title">월별 지출내역</div>
 						<div id="trend"></div>
 					</div>
 				</li>
@@ -56,30 +56,12 @@
 					<div class="partition">
 						<div class="graph_title">결제 빈도 카테고리</div>
 						<div id="countCategory"></div>
-					</section>
+					</div>
 				</li>
 				<li class="graph">
 					<div class="partition">
-						<div class="graph_title">일자별 지출 내역</div>
-						<div class="calendar_box">
-							<div class="ctr_box">
-								<span class="cal_month"></span>
-	        					<span class="cal_year"></span>
-        					</div>
-						    <table class="cal_table">
-						      <thead>
-						        <tr>
-						          <th>S</th>
-						          <th>M</th>
-						          <th>T</th>
-						          <th>W</th>
-						          <th>T</th>
-						          <th>F</th>
-						          <th>S</th>
-						        </tr>
-						      </thead>
-						      <tbody class="cal_body"></tbody>
-						    </table>
+						<div class="graph_title">월별 지출 내역</div>
+						<div id="barGraph">
 					    </div>
 					</div>
 				</li>
@@ -105,6 +87,6 @@
 	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=674ad988aec29b3f66bedf5414153f76&libraries=clusterer"></script>
 	<!-- custom javascript -->
 	<script type="text/javascript" src="../js/fragments/header.js"></script>
-	<script type="text/javascript" src="../js/statistics/statisticsFunc.js"></script>
+	<script type="text/javascript" src="../js/statistics/dashboard.js"></script>
 </body>
 </html>
