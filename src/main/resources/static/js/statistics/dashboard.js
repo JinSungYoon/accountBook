@@ -64,6 +64,31 @@ $(document).ready(function(){
 		callMonthUsageGraph(fromDt);
 	}
 	
+	// 연도별,반기별,분기별 combo박스 만드는 함수
+	if(window.location.href.includes('half')||window.location.href.includes('quarter')){
+		// /가 가장 마지막 index부터 시작되는 단어를 unit으로 만든다.
+		let unit = window.location.href.slice(window.location.href.lastIndexOf('/')+1);
+		// 현재 연도와 unit을 가지고 combobox 채우기
+		getPeriod(year,unit);
+		
+		// 현재월로 시작하는 combo중에 현재 월 보다 작은 값을 가진 월 combo return
+		let periodCombo =  $("#periodPicker option").filter(data => $("#periodPicker option")[data].value.startsWith(now.getFullYear()) && parseInt($("#periodPicker option")[data].value.substring(5),10) <= now.getMonth()+1);
+		// periodCombo중에 가장 마지막값(현재 연도 월이 해당되는 값)을 selec box의 default값으로 세팅.
+		$("#periodPicker").val(periodCombo[periodCombo.length-1].value);
+		
+		$("#periodPicker").change(function(){
+			let changePeriod = $(this).val();
+			getPeriod(changePeriod.substring(0,4),unit);
+			$("#periodPicker").val(changePeriod);
+			fromDt = changePeriod.replace('-','')+String(firstDate.getDate()).padStart(2,'0')+"000000";
+			callMonthUsageGraph(fromDt);
+		});
+		
+		fromDt = $("#periodPicker").val().replace('-','')+String(firstDate.getDate()).padStart(2,'0')+"000000";
+		callMonthUsageGraph(fromDt);
+		
+	}
+	
 	
 	function getYears(currentYear){
 		$("#yearpicker option").remove();
@@ -78,19 +103,47 @@ $(document).ready(function(){
 			$("#yearpicker").append(option);
 		} 
 	}
+	
+	function getPeriod(currentPeriod,unit){
+		$("#periodPicker option").remove();
+		
+		let increase = 0;
+		switch(unit){
+			case 'quarter':
+				increase = 3;
+				break;
+			case 'half':
+				increase = 6;
+				break;
+			case 'year':
+				increase = 12;
+				break;	
+			default:
+				increase = 1;
+				break;
+		}
+		
+		let beforePeriod = Number(currentPeriod)-(Math.round(increase/2));
+		let afterPeriod  = Number(currentPeriod)+(Math.round(increase/2));
+		
+		for(let y = beforePeriod; y<=afterPeriod;y++){
+		    for(let m =1; m<=12;m+=increase){
+            	let option = document.createElement("option");
+            	let period = String(y)+"-"+String(m).padStart(2,'0'); 
+				option.value = period;
+				option.text = period;
+				$("#periodPicker").append(option);
+		    }
+		}
+	}
 		
 	function callMonthUsageGraph(fromDt){
 		
 		let dataObj = new Object();
 		dataObj.fromDate = fromDt;
 		
-		if(window.location.href.includes('month')){
-			dataObj.unit = 'month';
-		}
 		
-		if(window.location.href.includes('year')){
-			dataObj.unit = 'year';
-		}
+		dataObj.unit = window.location.href.slice(window.location.href.lastIndexOf('/')+1);
 					
 		$.ajax({
 			type : 'GET',
@@ -103,14 +156,15 @@ $(document).ready(function(){
 				drawDonutGraph(result);
 				drawClustererGraph(result);
 				drawUsageGraph(result);
-				if(window.location.href.includes('year')){
-					drawUsageBarGraph(result);
-				}
+				// 월별 통계일 경우 달력에 일자에 따른 결제일 그래프
 				if(window.location.href.includes('month')){
 					let yy = $("#monthpicker").val().slice(0,4); 
 					let mm = $("#monthpicker").val().slice(-2);
 					drawCanlendar(new Date(yy,mm-1),result.usageAmountList);
+				}else{	// 나머지는 월별 bar 그래프
+					drawUsageBarGraph(result);
 				}
+				
 			},
 			error : function(result){
 				alert(`Error occured : ${result}`);
@@ -127,17 +181,38 @@ $(document).ready(function(){
 		let axis = [];
 		let curAcum = [];
 		let pastAcum = [];
-		if(window.location.href.includes('month')){
-			// 그래프 이름 넣기
-			graph1.push('현 누적 사용금액');
-			graph2.push('월 평균 일 사용금액');
-		}else if(window.location.href.includes('year')){
-			// 그래프 이름 넣기
-			graph1.push('현 누적 사용금액');
-			graph2.push('연 평균 월 사용금액');
+		
+		let unit = window.location.href.slice(window.location.href.lastIndexOf('/')+1);
+		
+		switch(unit){
+			case 'month':
+				// 그래프 이름 넣기
+				graph1.push('현 누적 사용금액');
+				graph2.push('월 평균 일 사용금액');
+				break;
+			case 'quarter':
+				// 그래프 이름 넣기
+				graph1.push('현 누적 사용금액');
+				graph2.push('분기 평균 월 사용금액');
+				break;
+			case 'half':
+				// 그래프 이름 넣기
+				graph1.push('현 누적 사용금액');
+				graph2.push('반기 평균 월 사용금액');
+				break;
+			case 'year':
+				// 그래프 이름 넣기
+				graph1.push('현 누적 사용금액');
+				graph2.push('연 평균 월 사용금액');
+				break;
+			default:
+				// 그래프 이름 넣기
+				graph1.push('현 누적 사용금액');
+				graph2.push('기간 평균 월 사용금액');
+				break;
 		}
 		
-		if(window.location.href.includes('year')){
+		if(!window.location.href.includes('month')){
 			// 현재 월 데이터 추출
 			let currentMonth = data.usageAmountList.map(d=>d.sumDateAmount);
 			// 과거 월 데이터 추출
@@ -170,6 +245,7 @@ $(document).ready(function(){
 				graph2.push(pastAcum[index]);
 			}
 		}
+		
 		let trend = c3.generate({
 			bindto : "#trend",
 			axis:{

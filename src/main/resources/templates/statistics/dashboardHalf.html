@@ -26,7 +26,7 @@
 			<li class="side_nav_list">주별</li>
 		</ul>
 	</div>
-	<div class="caledar">Date <input type="text" id="monthpicker"></div>
+	<div class="caledar">Semi-Annual <select id="periodPicker"></select></div>
 	<div class="conatiner">
 		<div>
 			<ul>
@@ -42,7 +42,7 @@
 			<ul>
 				<li class="graph">
 					<div class="partition">
-						<div class="graph_title">일별 누적 지출내역</div>
+						<div class="graph_title">월별 지출내역</div>
 						<div id="trend"></div>
 					</div>
 				</li>
@@ -60,26 +60,8 @@
 				</li>
 				<li class="graph">
 					<div class="partition">
-						<div class="graph_title">일자별 지출 내역</div>
-						<div class="calendar_box">
-							<div class="ctr_box">
-								<span class="cal_month"></span>
-	        					<span class="cal_year"></span>
-        					</div>
-						    <table class="cal_table">
-						      <thead>
-						        <tr>
-						          <th>S</th>
-						          <th>M</th>
-						          <th>T</th>
-						          <th>W</th>
-						          <th>T</th>
-						          <th>F</th>
-						          <th>S</th>
-						        </tr>
-						      </thead>
-						      <tbody class="cal_body"></tbody>
-						    </table>
+						<div class="graph_title">월별 지출 내역</div>
+						<div id="barGraph">
 					    </div>
 					</div>
 				</li>
@@ -87,11 +69,13 @@
 		</div>
 	</div>
 	<!-- jQuery javascript -->
+	<!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script-->
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
-	
 	<!-- Date picker -->
 	<!-- script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script -->
+	
 	<script th:src="@{/webjars/jquery-ui/jquery-ui.min.js}"/>"></script>
 	<!-- script th:src="@{/webjars/jquery-ui-monthpicker/1.0.1/jquery.ui.monthpicker.js}"></script -->
 	<script th:src="@{../js/jquery.mtz.monthpicker.js}"></script>

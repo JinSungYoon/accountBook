@@ -19,6 +19,7 @@ import core.statistics.dto.StatisticsDto;
 
 import core.statistics.dto.AmountUsedDto;
 import core.statistics.dto.CategoryDto;
+import core.statistics.dto.DateUnit;
 import core.statistics.dto.PositionDto;
 import core.statistics.service.StatisticsService;
 
@@ -30,10 +31,23 @@ public class StatisticsController {
 	@Autowired
 	private StatisticsService statisticsService;
 	
+	DateUnit dateUnit;
 	
 	@GetMapping("/statistics/month")
 	public ModelAndView showMonthDashboard()throws Exception {
 		ModelAndView mv = new ModelAndView("/statistics/dashboardMonth");
+		return mv;
+	}
+	
+	@GetMapping("/statistics/half")
+	public ModelAndView showHalfYearDashboard()throws Exception {
+		ModelAndView mv = new ModelAndView("/statistics/dashboardHalf");
+		return mv;
+	}
+	
+	@GetMapping("/statistics/quarter")
+	public ModelAndView showQuarterYearDashboard()throws Exception {
+		ModelAndView mv = new ModelAndView("/statistics/dashboardQuarter");
 		return mv;
 	}
 	
@@ -51,7 +65,6 @@ public class StatisticsController {
 		List<PositionDto> positionList = new ArrayList<>();
 		if(unit.equals("month")) {
 			String lastDate = statisticsService.getLastDateTimeOfMonth(fromDate);
-			
 			StatisticsCondDto cond = new StatisticsCondDto();
 			cond.setFromDate(fromDate);
 			cond.setToDate(lastDate);
@@ -61,9 +74,25 @@ public class StatisticsController {
 			container.setUsageAmountList(amountList);
 			container.setCategoryList(categoryList);
 			container.setPositionList(positionList);
-		}else if(unit.equals("year")) {
-			int div = Integer.valueOf(fromDate.substring(4,6))/12;
-			String changeDt = fromDate.substring(0,4)+String.valueOf((div*12)+12)+fromDate.substring(6);
+		}else{
+			int divide = 1;
+			switch(unit) {
+				case "year":
+					divide = dateUnit.year.getValue();
+					break;
+				case "half":
+					divide = dateUnit.half.getValue();
+					break;
+				case "quarter":
+					divide = dateUnit.quarter.getValue();
+					break;
+				default:
+					divide = 1;
+					break;
+			}
+			// 구분값으로 나눠지는 몫을 구한다.
+			int share = Integer.valueOf(fromDate.substring(4,6)) / divide + ((Integer.valueOf(fromDate.substring(4,6)) % divide ==0) ? 0 : 1);
+			String changeDt = fromDate.substring(0,4)+ String.format("%02d", share*divide) +fromDate.substring(6);
 			String lastDate = statisticsService.getLastDateTimeOfMonth(changeDt);
 			StatisticsCondDto cond = new StatisticsCondDto();
 			cond.setFromDate(fromDate);
@@ -76,7 +105,7 @@ public class StatisticsController {
 	}
 	
 	@GetMapping("/realTimeStatisticsGraph")
-	public SseEmitter realTimeStatisticsGraph(@RequestParam("fromDate") String fromDate) throws Exception{
+	public SseEmitter realTimeStatisticsGraph(@RequestParam("fromDate") String fromDate,@RequestParam("unit") String unit) throws Exception{
 		
 		SseEmitter emitter = new SseEmitter();
 		
@@ -84,18 +113,42 @@ public class StatisticsController {
 		List<AmountUsedDto> amountList = new ArrayList<>();
 		List<CategoryDto> categoryList = new ArrayList<>();
 		List<PositionDto> positionList = new ArrayList<>();
-		
-		String lastDate = statisticsService.getLastDateTimeOfMonth(fromDate);
-		
-		StatisticsCondDto cond = new StatisticsCondDto();
-		cond.setFromDate(fromDate);
-		cond.setToDate(lastDate);
-		amountList = statisticsService.searchUsageAmountStatistics(cond);
-		categoryList = statisticsService.searchCategoryStatistics(cond);
-		positionList = statisticsService.searchLocationCoordinate(cond);
-		container.setUsageAmountList(amountList);
-		container.setCategoryList(categoryList);
-		container.setPositionList(positionList);
+		if(unit.equals("month")) {
+			String lastDate = statisticsService.getLastDateTimeOfMonth(fromDate);
+			StatisticsCondDto cond = new StatisticsCondDto();
+			cond.setFromDate(fromDate);
+			cond.setToDate(lastDate);
+			amountList = statisticsService.searchUsageAmountStatistics(cond);
+			categoryList = statisticsService.searchCategoryStatistics(cond);
+			positionList = statisticsService.searchLocationCoordinate(cond);
+			container.setUsageAmountList(amountList);
+			container.setCategoryList(categoryList);
+			container.setPositionList(positionList);
+		}else{
+			int divide = 1;
+			switch(unit) {
+				case "year":
+					divide = dateUnit.year.getValue();
+					break;
+				case "half":
+					divide = dateUnit.half.getValue();
+					break;
+				case "quarter":
+					divide = dateUnit.quarter.getValue();
+					break;
+				default:
+					divide = 1;
+					break;
+			}
+			// 구분값으로 나눠지는 몫을 구한다.
+			int share = Integer.valueOf(fromDate.substring(4,6)) / divide + ((Integer.valueOf(fromDate.substring(4,6)) % divide ==0) ? 0 : 1);
+			String changeDt = fromDate.substring(0,4)+ String.format("%02d", share*divide) +fromDate.substring(6);
+			String lastDate = statisticsService.getLastDateTimeOfMonth(changeDt);
+			StatisticsCondDto cond = new StatisticsCondDto();
+			cond.setFromDate(fromDate);
+			cond.setToDate(lastDate);
+			container = statisticsService.searchStatistics(cond);
+		}
 		
 		emitter.send(container);
 		
