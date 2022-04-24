@@ -254,9 +254,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 		
 		Calendar cal = Calendar.getInstance();
 		cal.set(Integer.parseInt(year), Integer.parseInt(month)-1,1);
-		
-		
-		
+
 		return null;
 	}
 
@@ -286,77 +284,58 @@ public class StatisticsServiceImpl implements StatisticsService {
 		// 끝 날짜와 생성
 		LocalDateTime endDatetime = LocalDateTime.of(Year,Month,Day,Hour,Minute,Second);
 		
-		// 시작 날짜와 종료 날짜를 선언
-		//LocalDateTime startDatetime = LocalDateTime.of(2021,03,01,00,00,00);
-		//LocalDateTime endDatetime = LocalDateTime.of(2022,02,28,23,59,59);
-		
 		// JPA를 통해 1년간 소비 데이터 조회
-		List<TransactionHistoryEntity> oneYear =	thr.findByPaymentDateBetween(startDatetime, endDatetime);
+		List<TransactionHistoryEntity> currentPeriod =	thr.findByPaymentDateBetween(startDatetime, endDatetime);
 		// 월별 지출금앱 합계 계산
-		Map<Object, Long> currentYearData = oneYear.stream().collect(Collectors.groupingByConcurrent(d->d.getPaymentDate().getMonthValue(),Collectors.summingLong(d->d.getAmountOfPayment())));
+		Map<Object, Long> currentPeriodData = currentPeriod.stream().collect(Collectors.groupingByConcurrent(d->d.getPaymentDate().getMonthValue(),Collectors.summingLong(d->d.getAmountOfPayment())));
 		// JPA를 통해 과거 월별 지출금액 산출
-		List<TransactionHistoryEntity> pastYears =	thr.findByPaymentDateBefore(startDatetime);
-		// 과거 연도별 지출금액 산출
-		Map<Object, Long> pastYearData = pastYears.stream().collect(Collectors.groupingByConcurrent(d->d.getPaymentDate().getMonthValue(),Collectors.summingLong(d->d.getAmountOfPayment())));
-		// 과거 연도별 월 갯수 추출
-		List<String> pastYearCount = pastYears.stream().map(d->String.format("%04d",d.getPaymentDate().getYear())+String.format("%02d",d.getPaymentDate().getMonthValue())).distinct().sorted().collect(Collectors.toList());
+		List<TransactionHistoryEntity> pastPeriods =	thr.findByPaymentDateBefore(startDatetime);
+		// 과거 기간 지출금액 산출
+		Map<Object, Long> pastPeriodsData = pastPeriods.stream().collect(Collectors.groupingByConcurrent(d->d.getPaymentDate().getMonthValue(),Collectors.summingLong(d->d.getAmountOfPayment())));
+		// 과거 기간 월 갯수 추출
+		List<String> pastPeriodsCount = pastPeriods.stream().map(d->String.format("%04d",d.getPaymentDate().getYear())+String.format("%02d",d.getPaymentDate().getMonthValue())).distinct().sorted().collect(Collectors.toList());
 		
-		List<String> pastMonth = pastYearCount.stream().map(d->d.substring(4, d.length())).toList();
-		Map<String,Integer> pastMonthCount = new HashMap<String, Integer>();
+		// 과거 기간의 월에 개수 계산 
+		List<String> pastMonth = pastPeriodsCount.stream().map(d->d.substring(4, d.length())).toList();
+		Map<String,Integer> pastMonthsCount = new HashMap<String, Integer>();
 		for(int i=0;i<pastMonth.size();i++) {
-			pastMonthCount.put(pastMonth.get(i),Collections.frequency(pastMonth, pastMonth.get(i)));
+			pastMonthsCount.put(pastMonth.get(i),Collections.frequency(pastMonth, pastMonth.get(i)));
 		}
 		
-		Map<String,Long> sumStoreCategory = oneYear.stream().collect(Collectors.groupingBy(d->d.getStoreCategory(),Collectors.summingLong(d->d.getAmountOfPayment())));
-		Map<String,Long> countStoreCategory = oneYear.stream().collect(Collectors.groupingBy(d->d.getStoreCategory(),Collectors.counting()));
+		Map<String,Long> sumStoreCategory = currentPeriod.stream().collect(Collectors.groupingBy(d->d.getStoreCategory(),Collectors.summingLong(d->d.getAmountOfPayment())));
+		Map<String,Long> countStoreCategory = currentPeriod.stream().collect(Collectors.groupingBy(d->d.getStoreCategory(),Collectors.counting()));
 		
 		List<AmountUsedDto> amountList = new ArrayList<AmountUsedDto>();
 		List<PositionDto> positionList = new ArrayList<PositionDto>();
 		List<CategoryDto> categoryList = new ArrayList<CategoryDto>();
 		
-		System.out.println(pastMonthCount);
-		System.out.println(currentYearData);
-		System.out.println(pastYearData);
-		
-		for(int i=0;i<(endDatetime.getMonthValue() - startDatetime.getMonthValue())+1;i++) {
+		// 시작달부터 끝나는 달까지 순회하면서 데이터 계산.
+		for(int month=startDatetime.getMonthValue();month<=endDatetime.getMonthValue();month++) {
 			AmountUsedDto amountUsedDto = new AmountUsedDto(null, null, null, null);
-			// 12월인 경우 0으로 나오기 때문에 12로 매핑
-			if(((i+startDatetime.getMonthValue())%12)==0){
-				amountUsedDto.setDailyUsage(String.format("%02d",12));
-				if(currentYearData.get(12) == null) {
-					amountUsedDto.setSumDateAmount(0L);
-				}else {
-					amountUsedDto.setSumDateAmount(currentYearData.get(12));
-				}
-				if(pastMonthCount.get(String.format("%02d",12)) == null) {
-					amountUsedDto.setAverageDailyUsage(0L);
-				}else {
-					amountUsedDto.setAverageDailyUsage(pastYearData.get(12)/pastMonthCount.get(String.format("%02d",12)));
-				}
-			}else {
-				amountUsedDto.setDailyUsage(String.format("%02d",(i+startDatetime.getMonthValue())%12));
-				if(currentYearData.get((i+startDatetime.getMonthValue())%12) == null) {
-					amountUsedDto.setSumDateAmount(0L);
-				}else {
-					amountUsedDto.setSumDateAmount(currentYearData.get((i+startDatetime.getMonthValue())%12));
-				}
-				
-				if(pastMonthCount.get(String.format("%02d",(i+startDatetime.getMonthValue())%12)) == null) {
-					amountUsedDto.setAverageDailyUsage(0L);
-				}else {
-					amountUsedDto.setAverageDailyUsage(pastYearData.get((i+startDatetime.getMonthValue())%12)/pastMonthCount.get(String.format("%02d",(i+startDatetime.getMonthValue())%12)));
-				}
+			amountUsedDto.setDailyUsage(String.format("%02d",month));
+			// 이번 조회 기간에 해당되는 달의 결제 기록이 없다면 0L을 setting
+			if(currentPeriodData.get(month)==null) {
+				amountUsedDto.setSumDateAmount(0L);
+			}else {	// 해당되는 달의 결제 기록이 존재한다면 해당 결제 기록을 setting
+				amountUsedDto.setSumDateAmount(currentPeriodData.get(month));
 			}
-			
+			// 과거 조회 기간에 해당되는 달의 결제 기록이 없다면 0L 을 setting
+			if(pastMonthsCount.get(String.format("%02d",month)) == null) {
+				amountUsedDto.setAverageDailyUsage(0L);
+			}else {	// 해당되는 달의 결제 기록이 존재한다면 해당 결제 기록을 월의 개수로 나눠서 setting
+				amountUsedDto.setAverageDailyUsage(pastPeriodsData.get(month)/pastMonthsCount.get(String.format("%02d",month)));
+			}
+			// 셋팅한 자료를 amountList에 추가.
 			amountList.add(amountUsedDto);
 		}
+		
 		// 카테고리 정보를 카테고리 리스트에 추가한다.
 		for(Object data : sumStoreCategory.keySet()) {
 			CategoryDto item = new CategoryDto(String.valueOf(startDatetime.getYear()),data.toString(),countStoreCategory.get(data).intValue(),sumStoreCategory.get(data));
 			categoryList.add(item);
 		}
 		
-		positionList = oneYear.stream().map(data->{
+		positionList = currentPeriod.stream().map(data->{
 			PositionDto p = new PositionDto(data.getStoreName(),data.getXcoordinate(),data.getYcoordinate());
 			return p;
 					}).distinct()
